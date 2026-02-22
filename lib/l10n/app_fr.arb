@@ -1,0 +1,104 @@
+{
+  "@@locale": "fr",
+  "appName": "Mon Application",
+  "settings": "Paramètres",
+  "theme": "Thème",
+  "language": "Langue",
+  "chooseTheme": "Choisir le thème",
+  "chooseLanguage": "Choisir la langue",
+  "systemDefault": "Par défaut du système",
+  "lightMode": "Mode clair",
+  "darkMode": "Mode sombre",
+  "english": "Anglais",
+  "french": "Français",
+  "arabic": "Arabe",
+  "followSystem": "Suivre le système",
+  "ok": "OK",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "delete": "Supprimer",
+  "edit": "Modifier",
+  "profile": "Profil",
+  "logout": "Déconnexion",
+  "login": "Connexion",
+  "signup": "Inscription",
+  "home": "Accueil",
+  "appointment": "Rendez-vous",
+  "explore": "Explorer",
+  "chat": "Chat",
+  "search": "Recherche",
+  "favorites": "Favoris",
+  "notifications": "Notifications",
+  "completeYourProfile": "Complétez votre profil",
+
+
+  "promotions": "Promotions",
+
+  "myAccount": "Mon compte",
+
+  "personalInformation": "Informations personnelles",
+
+  "paymentMethods": "Moyens de paiement",
+
+  "activity": "Activité",
+
+  "savedAddresses": "Adresses enregistrées",
+
+  "support": "Support",
+
+  "additional": "Plus d'actions",
+
+  "dataAndPrivacy": "Données et confidentialité",
+
+
+  "noInternet": "Pas de connexion Internet",
+  "loading": "Chargement...",
+
+
+  "onboarding1title": "Transformez Votre Espace",
+  "onboarding2title": "Solutions d’Aménagement Complètes",
+  "onboarding3title": "Service Fiable et Professionnel",
+
+  "onboarding1" : "Nous concevons et décorons maisons et entreprises avec des styles modernes, élégants et personnalisés.",
+  "onboarding2" : "Du mobilier aux moindres détails, nous équipons entièrement votre espace pour vivre ou travailler.",
+  "onboarding3" : "Notre équipe d’experts vous garantit qualité, confort et respect des délais.",
+
+  "skip": "Passer",
+  "welcomeBack": "Bon retour,",
+  "welcomeSubtitle": "Découvrez des choix illimités et une expérience sans compromis.",
+  "email": "E-mail",
+  "password": "Mot de passe",
+  "rememberMe": "Se souvenir de moi",
+  "forgetPassword": "Mot de passe oublié ?",
+  "signIn": "Se connecter",
+  "signUp": "Créer un compte",
+  "orSignInWith": "Ou se connecter avec",
+
+  "letsCreateYourAccount": "Créons votre compte",
+  "firstName": "Prénom",
+  "lastName": "Nom",
+  "userName": "Nom d’utilisateur",
+  "phoneNumber": "Numéro de téléphone",
+  "orSignUpWith": "Ou s’inscrire avec",
+  "iAgreeTo": "J’accepte la",
+  "privacyPolicy": "Politique de confidentialité",
+  "termsAndConditions": "Conditions générales",
+  "and": "et",
+
+  "confirmEmail": "Confirmez votre e-mail",
+  "confirmEmailSubTitle": "Veuillez vérifier votre boîte de réception et confirmer votre adresse e-mail pour continuer.",
+  "continueButton": "Continuer",
+  "resendEmail": "Renvoyer l’e-mail",
+
+  "yourAccountCreatedTitle": "Votre compte a été créé",
+  "yourAccountCreatedSubtitle": "Votre compte a été créé avec succès.",
+
+  "forgetPasswordTitle": "Mot de passe oublié ?",
+  "forgetPasswordSubTitle": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+  "submit": "Envoyer",
+
+  "changeYourPasswordTitle": "Changer votre mot de passe",
+  "changeYourPasswordSubTitle": "Nous vous avons envoyé un lien sécurisé pour changer votre mot de passe.",
+  "done": "Terminé"
+
+}
