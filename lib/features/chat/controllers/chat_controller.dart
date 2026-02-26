@@ -47,6 +47,16 @@ class ChatController extends GetxController {
       final currentUserId = _authService.getCurrentUser()?.id ?? '';
 
       messages.value = data.map((msg) {
+        final list = List<dynamic>.from(msg['attachments'] ?? []);
+        if (msg['media_url'] != null) {
+          list.add({
+            'path': msg['media_url'],
+            'name': msg['message_type'] == 'AUDIO' ? 'Voice Message' : 'Image',
+            'isLocal': false,
+            'type': msg['message_type']?.toLowerCase(),
+          });
+        }
+
         return MessageModel(
           id: msg['id'],
           text: msg['content'],
@@ -54,9 +64,9 @@ class ChatController extends GetxController {
           isUserMessage: msg['sender_id'] == currentUserId,
           timestamp: DateTime.parse(msg['created_at']),
           senderName: msg['profiles']?['full_name'] ?? 'Unknown',
-          attachments: msg['attachments'] ?? [],
+          attachments: list,
         );
-      }).toList().reversed.toList(); // Reverse to show latest at bottom if list is reversed in UI
+      }).toList().reversed.toList();
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -71,10 +81,12 @@ class ChatController extends GetxController {
   }
 
   MessageType _determineMessageType(Map<String, dynamic> msg) {
+    if (msg['message_type'] == 'AUDIO') return MessageType.audio;
+    if (msg['message_type'] == 'IMAGE') return MessageType.image;
     if (msg['content'] == 'Voice Message') return MessageType.audio;
+    
     final attachments = msg['attachments'] as List<dynamic>?;
     if (attachments != null && attachments.isNotEmpty) {
-      // Check if any attachment is flagged as audio
       if (attachments.any((a) => a['type'] == 'audio')) {
         return MessageType.audio;
       }
@@ -93,6 +105,16 @@ class ChatController extends GetxController {
         final eventType = payload['event_type'];
 
         if (eventType == 'INSERT') {
+          final list = List<dynamic>.from(data['attachments'] ?? []);
+          if (data['media_url'] != null) {
+            list.add({
+              'path': data['media_url'],
+              'name': data['message_type'] == 'AUDIO' ? 'Voice Message' : 'Image',
+              'isLocal': false,
+              'type': data['message_type']?.toLowerCase(),
+            });
+          }
+
           final message = MessageModel(
             id: data['id'],
             text: data['content'],
@@ -100,7 +122,7 @@ class ChatController extends GetxController {
             isUserMessage: data['sender_id'] == currentUserId,
             timestamp: DateTime.parse(data['created_at']),
             senderName: 'Other User',
-            attachments: data['attachments'] ?? [],
+            attachments: list,
           );
           if (!messages.any((m) => m.id == message.id)) {
             messages.insert(0, message);

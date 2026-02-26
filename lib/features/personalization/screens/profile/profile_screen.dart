@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:decoright/utils/helpers/helper_functions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:decoright/utils/loaders/shimmer_loader.dart';
+import 'package:decoright/utils/constants/sizes.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -71,7 +73,26 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              children: [
+                const SizedBox(height: 40),
+                const Center(child: TShimmerEffect(width: 200, height: 200, radius: 100)),
+                const SizedBox(height: 16),
+                const Center(child: TShimmerEffect(width: 150, height: 20)),
+                const SizedBox(height: 40),
+                const TShimmerEffect(width: 150, height: 20),
+                const SizedBox(height: 16),
+                ...List.generate(5, (index) => const Column(
+                  children: [
+                    TShimmerEffect(width: double.infinity, height: 70),
+                    SizedBox(height: 12),
+                  ],
+                )),
+              ],
+            ),
+          );
         }
 
         return SafeArea(

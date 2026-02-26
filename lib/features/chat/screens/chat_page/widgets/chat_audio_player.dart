@@ -120,8 +120,8 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
                     trackHeight: 2,
                     activeTrackColor: widget.isUserMessage ? Colors.white : TColors.primary,
                     inactiveTrackColor: widget.isUserMessage 
-                        ? Colors.white.withOpacity(0.3) 
-                        : TColors.primary.withOpacity(0.3),
+                        ? Colors.white.withValues(alpha: 0.3) 
+                        : TColors.primary.withValues(alpha: 0.3),
                     thumbColor: widget.isUserMessage ? Colors.white : TColors.primary,
                   ),
                   child: Slider(

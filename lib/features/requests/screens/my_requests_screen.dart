@@ -6,6 +6,9 @@ import 'package:decoright/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:decoright/utils/helpers/helper_functions.dart';
+import 'package:decoright/utils/loaders/shimmer_loader.dart';
+import 'package:decoright/utils/constants/sizes.dart';
 
 class MyRequestsScreen extends StatelessWidget {
   const MyRequestsScreen({super.key});
@@ -20,7 +23,12 @@ class MyRequestsScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return ListView.separated(
+            padding: const EdgeInsets.all(TSizes.defaultSpace),
+            itemCount: 5,
+            separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
+            itemBuilder: (_, __) => const TShimmerEffect(width: double.infinity, height: 160),
+          );
         }
 
         if (controller.requests.isEmpty) {
@@ -90,6 +98,7 @@ class _RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = THelperFunctions.isDarkMode(context);
     final status = request['status'] ?? 'Unknown';
     final serviceTypeData = request['service_types'];
     final serviceType = ((serviceTypeData is Map ? serviceTypeData['name'] : request['service_type']) ?? 'Service')
@@ -100,159 +109,160 @@ class _RequestCard extends StatelessWidget {
     final updated_at = request['updated_at'];
     final created_at = request['created_at'];
     
-    // Simple logic for "new/updated" indicator: if updated_at is significantly after created_at
+    // Simple logic for "new/updated" indicator
     final bool isUpdated = updated_at != null && 
                           DateTime.parse(updated_at).difference(DateTime.parse(created_at)).inSeconds > 5;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    return Container(
+      margin: const EdgeInsets.only(bottom: TSizes.spaceBtwItems),
+      decoration: BoxDecoration(
+        color: isDark ? TColors.darkerGrey.withValues(alpha: 0.5) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isDark ? TColors.darkGrey : TColors.grey.withValues(alpha: 0.3)),
+        boxShadow: [
+          if (!isDark)
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+        ],
+      ),
       child: InkWell(
-        onTap: () {
-          // Navigate to chat with this request
-          Get.to(
-            () => const ChatScreen(),
-            arguments: {
-              'requestId': requestId,
-              'userName': serviceType,
-            },
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        onTap: () => Get.to(
+          () => const ChatScreen(),
+          arguments: {'requestId': requestId, 'userName': serviceType},
+        ),
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(TSizes.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: TColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Iconsax.note_1, color: TColors.primary, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            serviceType,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildStatusChip(context, status),
+                ],
+              ),
+              if (description.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Iconsax.note_1,
-                        color: TColors.primary,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          serviceType,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(status).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          status,
-                          style: TextStyle(
-                            color: _getStatusColor(status),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (description.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Icon(
-                        Iconsax.message,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
+                      const Icon(Iconsax.message, size: 16, color: TColors.primary),
                       const SizedBox(width: 4),
                       Text(
                         'Open Chat',
                         style: TextStyle(
                           color: TColors.primary,
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const Spacer(),
-                      
-                      // Cancel Button (Only for CUSTOMER and if not completed/rejected)
-                      // Cancel Button (Only for CUSTOMER and if Submitted)
-                      if (Get.find<ProfileController>().role == 'customer' && 
-                          status == 'Submitted')
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      if (Get.find<ProfileController>().role == 'customer' && status == 'Submitted')
                         TextButton(
-                          onPressed: () {
-                            Get.defaultDialog(
-                              title: 'Cancel Request',
-                              middleText: 'Are you sure you want to cancel this request?',
-                              onConfirm: () {
-                                Get.back();
-                                Get.find<RequestController>().cancelRequest(requestId);
-                              },
-                              onCancel: () => Get.back(),
-                              confirmTextColor: Colors.white,
-                              buttonColor: Colors.red,
-                            );
-                          },
-                          child: const Text('Cancel', style: TextStyle(color: Colors.red)),
-                        ),
-
-                      // Admin Status Update
-                      Get.find<ProfileController>().role == 'admin' 
-                        ? PopupMenuButton<String>(
-                            icon: const Icon(Iconsax.edit, size: 20),
-                            onSelected: (newStatus) {
-                               Get.find<RequestController>().updateStatus(requestId, newStatus);
-                            },
-                            itemBuilder: (context) => [
-                              'Submitted', 'Under Review', 'Waiting for Client Info', 
-                              'Approved', 'In Progress', 'Completed', 'Rejected'
-                            ].map((status) => PopupMenuItem(
-                              value: status,
-                              child: Text(status),
-                            )).toList(),
-                          )
-                        : Icon(
-                            Icons.arrow_forward_ios,
-                            size: 14,
-                            color: Colors.grey[400],
+                          onPressed: () => _confirmCancel(requestId),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(50, 30),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
+                          child: const Text('Cancel', style: TextStyle(color: Colors.red, fontSize: 13)),
+                        ),
+                      if (Get.find<ProfileController>().role == 'admin')
+                        _buildAdminMenu(requestId)
+                      else
+                        Icon(Iconsax.arrow_right_3, size: 16, color: isDark ? Colors.white54 : Colors.grey[400]),
                     ],
                   ),
                 ],
               ),
-            ),
-            if (isUpdated)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Iconsax.notification, size: 12, color: Colors.white),
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusChip(BuildContext context, String status) {
+    final color = _getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  void _confirmCancel(String requestId) {
+    Get.defaultDialog(
+      title: 'Cancel Request',
+      middleText: 'Are you sure you want to cancel this request?',
+      onConfirm: () {
+        Get.back();
+        Get.find<RequestController>().cancelRequest(requestId);
+      },
+      onCancel: () => Get.back(),
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+    );
+  }
+
+  Widget _buildAdminMenu(String requestId) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Iconsax.edit, size: 18),
+      onSelected: (newStatus) => Get.find<RequestController>().updateStatus(requestId, newStatus),
+      itemBuilder: (context) => [
+        'Submitted', 'Under Review', 'Waiting for Client Info', 
+        'Approved', 'In Progress', 'Completed', 'Rejected'
+      ].map((status) => PopupMenuItem(value: status, child: Text(status))).toList(),
     );
   }
 }

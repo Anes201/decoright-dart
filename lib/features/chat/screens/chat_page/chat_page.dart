@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
+import 'package:decoright/utils/helpers/helper_functions.dart';
+import 'package:decoright/utils/constants/colors.dart';
 import '../../controllers/chat_controller.dart';
 import 'widgets/chat_message_widget.dart';
 import 'widgets/message_input_widget.dart';
@@ -33,31 +35,32 @@ class ChatScreen extends StatelessWidget {
       });
     });
 
+    final isDark = THelperFunctions.isDarkMode(context);
+
     return Scaffold(
+      backgroundColor: isDark ? TColors.dark : TColors.light,
       appBar: AppBar(
-        title: Text(userName),
-        actions: [
-          IconButton(
-            icon: const Icon(Iconsax.setting_2),
-            onPressed: () {
-              // Open chat settings
-            },
-          ),
-        ],
+        backgroundColor: isDark ? TColors.dark : TColors.light,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: isDark ? Colors.white : Colors.black, size: 20),
+          onPressed: () => Get.back(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(userName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text('En ligne', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.green)),
+          ],
+        ),
+        actions: const [],
       ),
       body: Column(
         children: [
           Expanded(
             child: Obx(() {
               if (controller.messages.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Dites bonjour 👋',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey,
-                    ),
-                  ),
-                );
+                return const SizedBox.shrink();
               }
 
               return ListView.builder(

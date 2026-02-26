@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../../../../common/widgets/appbar/appbar.dart';
-import '../../../../utils/constants/colors.dart';
+import 'package:decoright/utils/helpers/helper_functions.dart';
+import 'package:decoright/utils/constants/sizes.dart';
+import 'package:decoright/utils/constants/colors.dart';
 import '../../controllers/message_controller.dart';
 import 'widgets/messages_list.dart';
 
@@ -13,13 +14,19 @@ class MessagesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = THelperFunctions.isDarkMode(context);
+
     return Scaffold(
-      appBar: TAppBar(
-        title: const Text('Messages'),
+      backgroundColor: isDark ? TColors.dark : TColors.light,
+      appBar: AppBar(
+        title: Text('Messages', style: Theme.of(context).textTheme.headlineSmall),
+        centerTitle: false,
+        backgroundColor: isDark ? TColors.dark : TColors.light,
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Iconsax.search_normal),
+            icon: Icon(Iconsax.search_normal, color: isDark ? Colors.white : Colors.black),
           )
         ],
       ),

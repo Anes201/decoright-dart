@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:decoright/utils/loaders/shimmer_loader.dart';
+import 'package:decoright/utils/helpers/helper_functions.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -36,6 +38,17 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   /// Status Shortcut: Active Projects
                   Obx(() {
+                    if (requestController.isLoading.value) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const TShimmerEffect(width: 150, height: 20),
+                          const SizedBox(height: TSizes.spaceBtwItems),
+                          const TShimmerEffect(width: double.infinity, height: 100),
+                          const SizedBox(height: TSizes.spaceBtwSections),
+                        ],
+                      );
+                    }
                     if (requestController.requests.isNotEmpty) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +77,13 @@ class HomeScreen extends StatelessWidget {
                   
                   Obx(() {
                     if (portfolioController.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: 3,
+                        separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
+                        itemBuilder: (_, __) => const TShimmerEffect(width: double.infinity, height: 280),
+                      );
                     }
                     
                     if (portfolioController.projects.isEmpty) {
@@ -227,10 +246,10 @@ class HomeScreen extends StatelessWidget {
                       height: 200,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
+                       placeholder: (context, url) => const TShimmerEffect(
+                        width: double.infinity,
                         height: 200,
-                        color: isDark ? Colors.grey[800] : Colors.grey[200],
-                        child: const Center(child: CircularProgressIndicator()),
+                        radius: 0,
                       ),
                       errorWidget: (context, url, error) => _buildNoImagePlaceholder(isDark),
                     )

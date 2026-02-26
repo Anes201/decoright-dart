@@ -33,7 +33,7 @@ class ChatMessageWidget extends StatelessWidget {
     final isDark = THelperFunctions.isDarkMode(context);
     final bubbleColor = isUserMessage
         ? TColors.primary
-        : (isDark ? TColors.darkerGrey : Colors.white);
+        : (isDark ? TColors.darkContainer : Colors.white);
 
     final textColor = isUserMessage
         ? Colors.white
@@ -57,23 +57,26 @@ class ChatMessageWidget extends StatelessWidget {
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.75,
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: bubbleColor,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(20),
                     topRight: const Radius.circular(20),
-                    bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
-                    bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+                    bottomLeft: Radius.circular(isUserMessage ? 20 : 0),
+                    bottomRight: Radius.circular(isUserMessage ? 0 : 20),
                   ),
                   boxShadow: [
-                    if (!isUserMessage)
+                    if (!isUserMessage && !isDark)
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
                   ],
+                  border: isUserMessage 
+                    ? null 
+                    : Border.all(color: isDark ? TColors.darkGrey.withValues(alpha: 0.3) : TColors.grey.withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,9 +298,19 @@ class ChatMessageWidget extends StatelessWidget {
   }
 
   Widget _buildAudioMessage(BuildContext context, List<dynamic> attachments, bool fromUser) {
-    if (attachments.isEmpty) return const Text('Audio unavailable');
+    if (attachments.isEmpty) {
+      // Check if message itself contains path or if it's a known placeholder
+      if (message.startsWith('https://') || message.contains('/data/user/')) {
+         return ChatAudioPlayer(
+            audioPath: message,
+            isLocal: message.contains('/data/user/'),
+            isUserMessage: fromUser,
+         );
+      }
+      return const Text('Audio content missing', style: TextStyle(color: Colors.grey, fontSize: 12));
+    }
     
-    final attachment = attachments.first; // Assume first attachment is the audio
+    final attachment = attachments.first;
     final path = attachment['path'] as String? ?? '';
     final isLocal = attachment['isLocal'] == true;
 

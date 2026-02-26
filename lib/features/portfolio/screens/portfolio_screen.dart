@@ -7,6 +7,7 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:decoright/features/personalization/controllers/profile_controller.dart';
 import 'package:decoright/features/portfolio/screens/upload_portfolio_screen.dart';
+import 'package:decoright/utils/loaders/shimmer_loader.dart';
 
 class PortfolioScreen extends StatelessWidget {
   const PortfolioScreen({super.key});
@@ -22,7 +23,12 @@ class PortfolioScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return ListView.separated(
+            padding: const EdgeInsets.all(TSizes.defaultSpace),
+            itemCount: 3,
+            separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwSections),
+            itemBuilder: (_, __) => const TShimmerEffect(width: double.infinity, height: 350),
+          );
         }
 
         if (controller.galleryItems.isEmpty) {
