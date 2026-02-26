@@ -31,10 +31,47 @@ class TLoginForm extends StatelessWidget {
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields),
 
-            const SizedBox(height: TSizes.spaceBtwSections),
+            /// password
+            Obx(
+              () => TextFormField(
+                controller: controller.passwordController,
+                obscureText: controller.hidePassword.value,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Iconsax.password_check),
+                  labelText: t.password,
+                  suffixIcon: IconButton(
+                    onPressed: () => controller.hidePassword.value = !controller.hidePassword.value,
+                    icon: Icon(controller.hidePassword.value ? Iconsax.eye_slash : Iconsax.eye),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: TSizes.spaceBtwInputFields / 2),
 
-            // Removed password field and remember me row for OTP flow
+            /// remember me & forget password
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                /// remember me
+                Row(
+                  children: [
+                    Obx(
+                      () => Checkbox(
+                        value: controller.rememberMe.value,
+                        onChanged: (value) => controller.rememberMe.value = value!,
+                      ),
+                    ),
+                    const Text('Remember Me'),
+                  ],
+                ),
 
+                /// forget password
+                TextButton(
+                  onPressed: () => Get.to(() => const ForgetPassword()),
+                  child: Text(t.forgetPassword),
+                ),
+              ],
+            ),
             const SizedBox(height: TSizes.spaceBtwSections),
 
             /// buttons
@@ -45,14 +82,24 @@ class TLoginForm extends StatelessWidget {
                   width: double.infinity,
                   child: Obx(
                     () => ElevatedButton(
-                      onPressed: controller.isLoading.value ? null : () => controller.loginWithOtp(),
+                      onPressed: controller.isLoading.value ? null : () => controller.signIn(),
                       child: controller.isLoading.value
                           ? const SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('Send Verification Code'),
+                          : const Text('Sign In'),
                     ),
+                  ),
+                ),
+                const SizedBox(height: TSizes.spaceBtwItems),
+
+                /// login with otp (Alternative)
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: controller.isLoading.value ? null : () => controller.loginWithOtp(),
+                    child: const Text('Login with OTP'),
                   ),
                 ),
                 const SizedBox(height: TSizes.spaceBtwItems),

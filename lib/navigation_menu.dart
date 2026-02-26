@@ -14,6 +14,7 @@ import 'features/personalization/screens/home/home_screen.dart';
 
 import 'package:decoright/features/authentication/controllers/auth_controller.dart';
 import 'package:decoright/common/widgets/guest/guest_barrier.dart';
+import 'features/chat/screens/main_chat/conversations_page.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -40,8 +41,16 @@ class NavigationMenu extends StatelessWidget {
                 label: AppLocalizations.of(context)!.home,
               ),
               BottomNavigationBarItem(
+                icon: const Icon(Iconsax.image),
+                label: 'Gallery',
+              ),
+              BottomNavigationBarItem(
                 icon: const Icon(Iconsax.calendar),
                 label: AppLocalizations.of(context)!.order,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Iconsax.message),
+                label: 'Chat',
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Iconsax.setting),
@@ -70,14 +79,25 @@ class NavigationController extends GetxController {
     super.onInit();
 
     final isGuest = authController.isGuest.value;
+    if (isGuest) {
+      selectedIndex.value = 1; // Default to Gallery for guests
+    }
 
     // Initialize screens list
     if (isGuest) {
       screens = [
-        const HomeScreen(),
+        const GuestBarrier(
+          title: 'Login to View Home',
+          message: 'You need to be logged in to access the personalized dashboard.',
+        ),
+        const PortfolioScreen(), // Guest CAN see only the gallery
         const GuestBarrier(
           title: 'Login to Order',
           message: 'You need to be logged in to submit service requests.',
+        ),
+        const GuestBarrier(
+          title: 'Login to Chat',
+          message: 'You need to be logged in to chat with our designers.',
         ),
         const GuestBarrier(
           title: 'Login to Settings',
@@ -86,9 +106,11 @@ class NavigationController extends GetxController {
       ];
     } else {
       screens = [
-        const HomeScreen(),                 // New Home Screen
-        const MyRequestsScreen(),                 // Service Requests
-        SettingsScreen(),                    // Settings
+        const HomeScreen(),
+        const PortfolioScreen(),
+        const MyRequestsScreen(),
+        MessagesPage(),
+        SettingsScreen(),
       ];
     }
   }

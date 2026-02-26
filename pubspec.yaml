@@ -1,5 +1,5 @@
 name: decoright
-description: "A new Flutter project."
+description: "DecoRight - Professional Interior Design & Decoration Services"
 
 publish_to: 'none'
 
@@ -47,6 +47,14 @@ dev_dependencies:
 
 
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/logos/decoright-logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default:21
+
 
 
 flutter:
@@ -55,13 +63,9 @@ flutter:
   assets:
     - .env
     - assets/images/animations/
-    - assets/images/banners/
-    - assets/images/content/
     - assets/images/onboarding_images/
-    - assets/images/reviews/
     - assets/logos/
-    - assets/icons/
-    - assets/doctors/
+    - assets/icons/services/
     - lib/l10n/
 
 

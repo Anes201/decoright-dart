@@ -24,15 +24,30 @@ class AuthController extends GetxController {
   /// Initial Screen Redirect
   void screenRedirect() async {
     final user = _authService.getCurrentUser();
+    final bool wasGuest = TLocalStorage.instance.readData('isGuest') ?? false;
     
     TLoggerHelper.debug("--- screenRedirect called ---");
     TLoggerHelper.debug("User: ${user?.email ?? 'NULL'}");
+    TLoggerHelper.debug("Was Guest: $wasGuest");
 
     if (user != null) {
       TLoggerHelper.debug("User found, checking profile...");
+      isGuest.value = false;
       await checkProfileAndNavigate();
+    } else if (wasGuest) {
+      TLoggerHelper.debug("Guest status persisted, redirecting to NavigationMenu");
+      isGuest.value = true;
+      Get.offAll(() => const NavigationMenu());
     } else {
-      TLoggerHelper.debug("No user found, checking onboarding status...");
+      TLoggerHelper.debug("No user found and not guest, checking onboarding status...");
+      
+      // Load remembered email if exists
+      final rememberedEmail = TLocalStorage.instance.readData('rememberedEmail');
+      if (rememberedEmail != null && (rememberedEmail as String).isNotEmpty) {
+        emailController.text = rememberedEmail;
+        rememberMe.value = true;
+      }
+
       final isFirstTime = TLocalStorage.instance.readData('isFirstTime');
       TLoggerHelper.debug("isFirstTime: $isFirstTime");
       
@@ -50,6 +65,7 @@ class AuthController extends GetxController {
   final isLoading = false.obs;
   final hidePassword = true.obs;
   final isGuest = false.obs;
+  final rememberMe = false.obs;
 
   // Text editing controllers
   final emailController = TextEditingController();
@@ -65,6 +81,7 @@ class AuthController extends GetxController {
   /// Login as Guest
   void loginAsGuest() {
     isGuest.value = true;
+    TLocalStorage.instance.saveData('isGuest', true);
     Get.offAll(() => const NavigationMenu());
   }
 
@@ -91,6 +108,14 @@ class AuthController extends GetxController {
 
       if (response.user != null) {
         isGuest.value = false;
+        
+        // Handle Remember Me
+        if (rememberMe.value) {
+          TLocalStorage.instance.saveData('rememberedEmail', email);
+        } else {
+           TLocalStorage.instance.removeData('rememberedEmail');
+        }
+
         Get.snackbar(
           'Success',
           'Welcome back!',
@@ -135,6 +160,13 @@ class AuthController extends GetxController {
       await _authService.signInWithOtp(email: email);
       currentOtpType = OtpType.signup;
       
+      // Handle Remember Me for OTP
+      if (rememberMe.value) {
+        TLocalStorage.instance.saveData('rememberedEmail', email);
+      } else {
+        TLocalStorage.instance.removeData('rememberedEmail');
+      }
+
       Get.to(() => VerifyEmailScreen(email: email));
     } catch (e) {
       Get.snackbar(
@@ -408,6 +440,7 @@ class AuthController extends GetxController {
     try {
       await _authService.signOut();
       isGuest.value = false;
+      TLocalStorage.instance.saveData('isGuest', false);
       
       Get.snackbar(
         'Success',

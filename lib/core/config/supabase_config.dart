@@ -7,8 +7,8 @@ class SupabaseConfig {
   static Future<void> initialize() async {
     await dotenv.load(fileName: ".env");
     
-    final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
-    final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+    final supabaseUrl = dotenv.env['VITE_SUPABASE_URL'] ?? '';
+    final supabaseAnonKey = dotenv.env['VITE_SUPABASE_ANON_KEY'] ?? '';
 
     if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
       throw Exception('Supabase credentials not found in .env file');

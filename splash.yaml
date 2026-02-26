@@ -1,13 +1,13 @@
 flutter_native_splash:
   color: "#FFFFFF"
   color_dark: "#272727"
-  image: assets/logos/DR_logo.jpeg
-  image_dark: assets/logos/DR_logo.jpeg
+  image: assets/logos/decoright-logo.png
+  image_dark: assets/logos/decoright-logo.png
 
 android_12:
   color: "#FFFFFF"
   color_dark: "#272727"
-  image: assets/logos/DR_logo.jpeg
-  image_dark: assets/logos/DR_logo.jpeg
+  image: assets/logos/decoright-logo.png
+  image_dark: assets/logos/decoright-logo.png
 
 web: false

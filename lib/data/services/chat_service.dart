@@ -8,7 +8,7 @@ class ChatService {
   /// Send a message (with optional attachments)
   /// Send a message (with optional attachments)
   /// If attachments are provided, they are sent as separate messages of type IMAGE (or AUDIO).
-  Future<void> sendMessage({
+  Future<Map<String, dynamic>> sendMessage({
     required String requestId,
     required String? content, // Can be null if only sending file
     List<File>? attachments,
@@ -17,9 +17,7 @@ class ChatService {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
 
-    // 1. Get or Create Chat Room (if needed, but ERD says 1:1 request:room)
-    // Assuming room exists or we query by request_id. ERD says MESSAGE links to chat_room_id.
-    // We need to find the chat_room_id for this request_id.
+    // 1. Get or Create Chat Room
     final roomResponse = await _client
         .from('chat_rooms')
         .select('id')
@@ -28,7 +26,6 @@ class ChatService {
     
     String chatRoomId;
     if (roomResponse == null) {
-        // Create room if not exists
         final newRoom = await _client
             .from('chat_rooms')
             .insert({'request_id': requestId, 'is_active': true})
@@ -39,44 +36,48 @@ class ChatService {
         chatRoomId = roomResponse['id'];
     }
 
+    Map<String, dynamic>? firstMessage;
+
     // 2. Send Text Message (if content exists)
     if (content != null && content.isNotEmpty) {
-      await _client.from('messages').insert({
+      firstMessage = await _client.from('messages').insert({
         'chat_room_id': chatRoomId,
+        'request_id': requestId,
         'sender_id': user.id,
         'content': content,
         'message_type': 'TEXT',
         'is_read': false,
-        'sent_at': DateTime.now().toIso8601String(),
-      });
+      }).select().single();
     }
 
     // 3. Send Attachments as separate messages
     if (attachments != null && attachments.isNotEmpty) {
       for (final file in attachments) {
          final fileName = '$requestId/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
-         final storagePath = await _client.storage
+         await _client.storage
               .from('request-attachments')
               .upload(fileName, file);
 
-         // Helper to get public URL? or just store path. ERD says 'media_url'.
-         // Usually we store the path or signed url unique key. 
-         // But let's assume getPublicUrl for simplicity or just the path if client handles it.
-         // 'media_url' suggests a full string.
          final mediaUrl = _client.storage.from('request-attachments').getPublicUrl(fileName);
 
-         await _client.from('messages').insert({
+         final msg = await _client.from('messages').insert({
             'chat_room_id': chatRoomId,
+            'request_id': requestId,
             'sender_id': user.id,
             'content': '',
-            'message_type': isVoiceMessage ? 'AUDIO' : 'IMAGE', // Naive check, assuming all attachments same type
+            'message_type': isVoiceMessage ? 'AUDIO' : 'IMAGE',
             'media_url': mediaUrl,
-            'duration_seconds': isVoiceMessage ? 0 : null, // Todo: get duration
+            'duration_seconds': isVoiceMessage ? 0 : null,
             'is_read': false,
-            'sent_at': DateTime.now().toIso8601String(),
-         });
+         }).select().single();
+
+         if (firstMessage == null) {
+           firstMessage = msg;
+         }
       }
     }
+    
+    return firstMessage ?? {};
   }
 
   /// Get messages for a request
@@ -87,7 +88,7 @@ class ChatService {
         .from('messages')
         .select('*, chat_rooms!inner(request_id), profiles(first_name, last_name)') // updated profile cols
         .eq('chat_rooms.request_id', requestId)
-        .order('sent_at', ascending: true); // created_at -> sent_at
+        .order('created_at', ascending: true); // created_at
 
     return List<Map<String, dynamic>>.from(response);
   }

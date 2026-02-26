@@ -273,7 +273,6 @@ class RequestController extends GetxController {
 
   @override
   void onClose() {
-  void onClose() {
     descriptionController.dispose();
     durationController.dispose();
     locationController.dispose();

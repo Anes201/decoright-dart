@@ -5,8 +5,8 @@
 class TImages {
 
   // -- App Logos
-  static const String darkAppLogo = "assets/logos/DR_logo.jpeg";
-  static const String lightAppLogo = "assets/logos/DR_logo.jpeg";
+  static const String darkAppLogo = "assets/logos/decoright-logo.png";
+  static const String lightAppLogo = "assets/logos/decoright-logo.png";
 
   // -- Lottie Animations
   static String cartAnimation = "assets/images/animations/lady-adding-product-in-cart-animation.json";
@@ -71,7 +71,7 @@ class TImages {
   //Profile
   static const String user = "assets/images/content/user.png";
 
-  static String appLogo = "assets/logos/DR_logo.jpeg";
+  static String appLogo = "assets/logos/decoright-logo.png";
 
   static String ambulance = "assets/icons/services/ambulance.png";
   static String doctor = "assets/icons/services/doctor.svg";
