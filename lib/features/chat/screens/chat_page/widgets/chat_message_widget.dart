@@ -14,6 +14,7 @@ class ChatMessageWidget extends StatelessWidget {
   final DateTime? timestamp;
   final dynamic attachments;
   final MessageType type;
+  final String? messageId;
 
   const ChatMessageWidget({
     super.key,
@@ -22,10 +23,12 @@ class ChatMessageWidget extends StatelessWidget {
     this.timestamp,
     this.attachments,
     this.type = MessageType.text,
+    this.messageId,
   });
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ChatController>();
     final isDark = THelperFunctions.isDarkMode(context);
     final bubbleColor = isUserMessage
         ? TColors.primary
@@ -45,52 +48,58 @@ class ChatMessageWidget extends StatelessWidget {
         children: [
           Align(
             alignment: alignment,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(20),
-                  topRight: const Radius.circular(20),
-                  bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
-                  bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+            child: GestureDetector(
+              onLongPress: isUserMessage && message.trim() != '(Message deleted)'
+                  ? () => _showDeleteDialog(context, controller)
+                  : null,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.75,
                 ),
-                boxShadow: [
-                  if (!isUserMessage)
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Attachments Grid/List
-                  if (attachmentList.isNotEmpty && type != MessageType.audio) ...[
-                    _buildAttachments(context, attachmentList, isUserMessage),
-                    if (message.trim().isNotEmpty && message.trim() != 'Pièce jointe')
-                      const SizedBox(height: 8),
-                  ],
-
-                  if (type == MessageType.audio)
-                    _buildAudioMessage(context, attachmentList, isUserMessage),
-
-                  if (type != MessageType.audio && message.trim().isNotEmpty && message.trim() != 'Pièce jointe')
-                    Text(
-                      message.trim(),
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 15,
-                        height: 1.3,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: bubbleColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(20),
+                    topRight: const Radius.circular(20),
+                    bottomLeft: Radius.circular(isUserMessage ? 20 : 4),
+                    bottomRight: Radius.circular(isUserMessage ? 4 : 20),
+                  ),
+                  boxShadow: [
+                    if (!isUserMessage)
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
                       ),
-                    ),
-                ],
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Attachments Grid/List
+                    if (attachmentList.isNotEmpty && type != MessageType.audio) ...[
+                      _buildAttachments(context, attachmentList, isUserMessage),
+                      if (message.trim().isNotEmpty && message.trim() != 'Pièce jointe')
+                        const SizedBox(height: 8),
+                    ],
+
+                    if (type == MessageType.audio && message.trim() != '(Message deleted)')
+                      _buildAudioMessage(context, attachmentList, isUserMessage),
+
+                    if (type != MessageType.audio && message.trim().isNotEmpty && message.trim() != 'Pièce jointe')
+                      Text(
+                        message.trim(),
+                        style: TextStyle(
+                          color: message.trim() == '(Message deleted)' ? (isUserMessage ? Colors.white70 : Colors.grey) : textColor,
+                          fontSize: 15,
+                          height: 1.3,
+                          fontStyle: message.trim() == '(Message deleted)' ? FontStyle.italic : null,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

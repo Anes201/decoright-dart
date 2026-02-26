@@ -27,8 +27,10 @@ class TLoginHeader extends StatelessWidget {
         ),
         const SizedBox(height: TSizes.sm),
         Text(
-          t.welcomeSubtitle,
-          style: Theme.of(context).textTheme.bodyMedium,
+          "Design your space with DecoRight",
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );

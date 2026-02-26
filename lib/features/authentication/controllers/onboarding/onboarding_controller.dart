@@ -1,4 +1,4 @@
-import 'package:decoright/features/authentication/screens/entry/welcome_screen.dart';
+import 'package:decoright/features/authentication/screens/login/login_screen.dart';
 import 'package:decoright/utils/local_storage/storage_utility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -23,7 +23,7 @@ class OnBoardingController extends GetxController{
   void nextPage(){
     if(currentPageIndex.value == 2){
       TLocalStorage.instance.saveData('isFirstTime', false);
-      Get.offAll(() => const WelcomeScreen());
+      Get.offAll(() => const LoginScreen());
     }else{
       int page = currentPageIndex.value + 1;
       pagecontroller.jumpToPage(page);
@@ -33,7 +33,7 @@ class OnBoardingController extends GetxController{
   /// Update The Current Index And Jump To The Last Page
   void skipPage(){
     TLocalStorage.instance.saveData('isFirstTime', false);
-    Get.offAll(() => const WelcomeScreen());
+    Get.offAll(() => const LoginScreen());
   }
 
 }

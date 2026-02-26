@@ -88,19 +88,36 @@ class ChatController extends GetxController {
     
     _subscription = _chatService.subscribeToMessages(
       requestId,
-      (newMessage) {
-        final message = MessageModel(
-          id: newMessage['id'],
-          text: newMessage['content'],
-          type: _determineMessageType(newMessage),
-          isUserMessage: newMessage['sender_id'] == currentUserId,
-          timestamp: DateTime.parse(newMessage['created_at']),
-          senderName: 'Other User',
-          attachments: newMessage['attachments'] ?? [],
-        );
-        // Only insert if it doesn't already exist (to avoid double insertion from sendMessage)
-        if (!messages.any((m) => m.id == message.id)) {
-           messages.insert(0, message);
+      (payload) {
+        final data = payload['new'];
+        final eventType = payload['event_type'];
+
+        if (eventType == 'INSERT') {
+          final message = MessageModel(
+            id: data['id'],
+            text: data['content'],
+            type: _determineMessageType(data),
+            isUserMessage: data['sender_id'] == currentUserId,
+            timestamp: DateTime.parse(data['created_at']),
+            senderName: 'Other User',
+            attachments: data['attachments'] ?? [],
+          );
+          if (!messages.any((m) => m.id == message.id)) {
+            messages.insert(0, message);
+          }
+        } else if (eventType == 'UPDATE') {
+          final index = messages.indexWhere((m) => m.id == data['id']);
+          if (index != -1) {
+            messages[index] = MessageModel(
+              id: data['id'],
+              text: data['content'],
+              type: _determineMessageType(data),
+              isUserMessage: data['sender_id'] == currentUserId,
+              timestamp: DateTime.parse(data['created_at']),
+              senderName: messages[index].senderName,
+              attachments: data['attachments'] ?? [],
+            );
+          }
         }
       },
     );
@@ -282,6 +299,36 @@ class ChatController extends GetxController {
   void removeAttachment(int index) {
     if (index >= 0 && index < selectedAttachments.length) {
       selectedAttachments.removeAt(index);
+    }
+  }
+
+  /// Delete a message
+  Future<void> deleteMessage(String messageId) async {
+    try {
+      await _chatService.deleteMessage(messageId);
+      // Local update will naturally happen via realtime or manual refresh
+      // but let's update locally for instant feedback if desired
+      final index = messages.indexWhere((m) => m.id == messageId);
+      if (index != -1) {
+        final old = messages[index];
+        messages[index] = MessageModel(
+          id: old.id,
+          text: '(Message deleted)',
+          type: MessageType.text,
+          isUserMessage: old.isUserMessage,
+          timestamp: old.timestamp,
+          senderName: old.senderName,
+          attachments: [],
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to delete message: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.1),
+        colorText: Colors.red,
+      );
     }
   }
 

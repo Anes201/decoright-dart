@@ -116,5 +116,17 @@ class ChatService {
         .subscribe();
 
     return channel;
+  /// Delete a message (Soft delete by replacing content)
+  Future<void> deleteMessage(String messageId) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception('Not authenticated');
+
+    await _client.from('messages').update({
+      'content': '(Message deleted)',
+      'attachments': [],
+      'media_url': null,
+      'duration_seconds': null,
+      'message_type': 'TEXT', // Revert to TEXT for showing the placeholder
+    }).eq('id', messageId).eq('sender_id', user.id); // Only allow deleting own messages
   }
 }

@@ -72,6 +72,7 @@ class ChatScreen extends StatelessWidget {
                   final message = controller.messages[index];
 
                   return ChatMessageWidget(
+                    messageId: message.id,
                     message: message.text ?? '',
                     isUserMessage: message.isUserMessage,
                     timestamp: message.timestamp,

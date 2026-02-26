@@ -38,6 +38,23 @@ class LoginScreen extends StatelessWidget {
               TSocialButtons(),
               
               const SizedBox(height: TSizes.spaceBtwSections),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account? "),
+                  TextButton(
+                    onPressed: () => Get.to(() => const SignUpScreen()),
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        color: TColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: TSizes.spaceBtwItems),
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
