@@ -11,7 +11,8 @@ class RequestService {
     required String location,
     required String spaceType,   // This will now be the space_type_id
     int? duration,
-    double? areaSqm,
+    double? width,
+    double? height,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
@@ -21,10 +22,12 @@ class RequestService {
         .insert({
           'user_id': user.id,
           'service_type_id': serviceType,
-          'space_type_id': spaceType,
+          'space_type_id': spaceType.isEmpty ? null : spaceType,
           'location': location,
           'description': description,
-          'area_sqm': areaSqm,
+          'duration': duration,
+          'width': width,
+          'height': height,
           'status': 'Submitted',
         })
         .select()

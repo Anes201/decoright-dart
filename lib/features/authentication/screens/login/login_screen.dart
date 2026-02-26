@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../common/widgets/login_signup/form_divider.dart';
 import '../../../../common/widgets/login_signup/socail_buttons.dart';
+import '../../../../utils/constants/colors.dart';
+import '../signup/signup.dart';
 import '../../../../l10n/app_localizations.dart';
 
 import 'package:decoright/features/authentication/controllers/auth_controller.dart';
@@ -25,17 +27,17 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             children: [
               /// logo, title and subtitle
-              TLoginHeader(),
+              const TLoginHeader(),
 
               /// Form
-              TLoginForm(),
+              const TLoginForm(),
 
               /// Divider
               TFormDivider(dividerText: t.orSignInWith),
-              SizedBox(height: TSizes.spaceBtwSections,),
+              const SizedBox(height: TSizes.spaceBtwSections,),
 
               /// footer
-              TSocialButtons(),
+              const TSocialButtons(),
               
               const SizedBox(height: TSizes.spaceBtwSections),
               Row(

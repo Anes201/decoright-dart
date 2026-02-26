@@ -6,6 +6,7 @@ import 'package:decoright/core/config/supabase_config.dart';
 import 'package:decoright/features/chat/models/messages_model.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:decoright/features/chat/controllers/chat_controller.dart';
 import 'chat_audio_player.dart';
 
 class ChatMessageWidget extends StatelessWidget {
@@ -304,6 +305,30 @@ class ChatMessageWidget extends StatelessWidget {
       audioPath: path,
       isLocal: isLocal,
       isUserMessage: fromUser,
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, ChatController controller) {
+    if (messageId == null) return;
+    
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Delete Message?'),
+        content: const Text('This will replace the message content with a deletion notice.'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.deleteMessage(messageId!);
+              Get.back();
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
     );
   }
 }

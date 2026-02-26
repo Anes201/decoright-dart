@@ -116,6 +116,8 @@ class ChatService {
         .subscribe();
 
     return channel;
+  }
+
   /// Delete a message (Soft delete by replacing content)
   Future<void> deleteMessage(String messageId) async {
     final user = _client.auth.currentUser;

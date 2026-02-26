@@ -2,7 +2,7 @@ import 'package:decoright/utils/logging/logger.dart'; // Ensure we use project l
 import 'package:decoright/data/services/auth_service.dart';
 import 'package:decoright/features/authentication/screens/signup/verify_email_screen.dart';
 import 'package:decoright/features/authentication/screens/entry/profile_completion_screen.dart';
-import 'package:decoright/features/authentication/screens/entry/welcome_screen.dart';
+import 'package:decoright/features/authentication/screens/login/login_screen.dart';
 import 'package:decoright/features/authentication/screens/onboarding/onboarding_screen.dart';
 import 'package:decoright/features/authentication/screens/password_configuration/new_password_screen.dart';
 import 'package:decoright/navigation_menu.dart';
@@ -70,7 +70,7 @@ class AuthController extends GetxController {
         Get.offAll(() => const OnBoardingScreen());
       } else {
         TLoggerHelper.debug("Redirecting to WelcomeScreen");
-        Get.offAll(() => const WelcomeScreen());
+        Get.offAll(() => const LoginScreen());
       }
     }
   }
@@ -464,7 +464,7 @@ class AuthController extends GetxController {
       );
 
       // Navigate back to Welcome/Entry
-      Get.offAll(() => const WelcomeScreen());
+      Get.offAll(() => const LoginScreen());
     } catch (e) {
       Get.snackbar(
         'Error',

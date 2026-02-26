@@ -28,7 +28,8 @@ class RequestController extends GetxController {
   final selectedSpaceTypeId = RxnString();
   final descriptionController = TextEditingController();
   final locationController = TextEditingController();
-  final areaController = TextEditingController();
+  final widthController = TextEditingController();
+  final heightController = TextEditingController();
   final durationController = TextEditingController();
   final selectedFiles = <File>[].obs;
 
@@ -200,14 +201,12 @@ class RequestController extends GetxController {
       
       // 1. Create Request
       final request = await _requestService.createServiceRequest(
-        // The serviceType argument in service might need changing or just pass ID
-        // Wait, RequestService.createServiceRequest expects serviceType as String but uses it for lookup.
-        // I'll update RequestService to accept IDs directly for better efficiency.
         serviceType: selectedServiceTypeId.value!, 
         description: descriptionController.text.trim(),
         location: locationController.text.trim().isNotEmpty ? locationController.text.trim() : "TBD",
         spaceType: selectedSpaceTypeId.value ?? '', 
-        areaSqm: double.tryParse(areaController.text.trim()),
+        width: double.tryParse(widthController.text.trim()),
+        height: double.tryParse(heightController.text.trim()),
         duration: duration,
       );
       
@@ -228,7 +227,8 @@ class RequestController extends GetxController {
       descriptionController.clear();
       durationController.clear();
       locationController.clear();
-      areaController.clear();
+      widthController.clear();
+      heightController.clear();
       selectedFiles.clear();
       
       // Reload requests
@@ -276,7 +276,8 @@ class RequestController extends GetxController {
     descriptionController.dispose();
     durationController.dispose();
     locationController.dispose();
-    areaController.dispose();
+    widthController.dispose();
+    heightController.dispose();
     super.onClose();
   }
 }
