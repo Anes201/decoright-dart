@@ -188,7 +188,7 @@ class SettingsScreen extends StatelessWidget {
           'Success',
           'Logged out successfully',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.1),
+          backgroundColor: Colors.green.withValues(alpha: 0.1),
           colorText: Colors.green,
         );
 
@@ -200,7 +200,7 @@ class SettingsScreen extends StatelessWidget {
           'Error',
           'Failed to logout: $e',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.1),
+          backgroundColor: Colors.red.withValues(alpha: 0.1),
           colorText: Colors.red,
         );
       }
@@ -231,7 +231,7 @@ class SettingsScreen extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.3),
+                    color: Colors.grey.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -288,10 +288,10 @@ class SettingsScreen extends StatelessWidget {
                                 ),
                                 padding: const EdgeInsets.all(TSizes.md),
                                 decoration: BoxDecoration(
-                                  color: isWhatsapp ? const Color(0xFFE8F8EF) : TColors.primary.withOpacity(0.1),
+                                  color: isWhatsapp ? const Color(0xFFE8F8EF) : TColors.primary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: (isWhatsapp ? const Color(0xFF25D366) : TColors.primary).withOpacity(0.2),
+                                    color: (isWhatsapp ? const Color(0xFF25D366) : TColors.primary).withValues(alpha: 0.2),
                                   ),
                                 ),
                                 child: Column(

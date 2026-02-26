@@ -58,7 +58,7 @@ class SupportScreen extends StatelessWidget {
                           'Coming Soon',
                           'Live chat support coming soon!',
                           snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.blue.withOpacity(0.1),
+                          backgroundColor: Colors.blue.withValues(alpha: 0.1),
                           colorText: Colors.blue,
                         );
                       },
@@ -78,7 +78,7 @@ class SupportScreen extends StatelessWidget {
                             'Error',
                             'Could not launch phone app',
                             snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.red.withOpacity(0.1),
+                            backgroundColor: Colors.red.withValues(alpha: 0.1),
                             colorText: Colors.red,
                           );
                         }
@@ -99,7 +99,7 @@ class SupportScreen extends StatelessWidget {
                             'Error',
                             'Could not launch email app',
                             snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.red.withOpacity(0.1),
+                            backgroundColor: Colors.red.withValues(alpha: 0.1),
                             colorText: Colors.red,
                           );
                         }

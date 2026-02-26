@@ -74,7 +74,7 @@ class RequestController extends GetxController {
         'Error',
         'Failed to load requests: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
         colorText: Colors.red,
       );
     } finally {
@@ -95,7 +95,7 @@ class RequestController extends GetxController {
         'Success',
         'Status updated to $newStatus',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1),
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
         colorText: Colors.green,
       );
       
@@ -143,7 +143,7 @@ class RequestController extends GetxController {
         'Success',
         'Request cancelled successfully',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1),
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
         colorText: Colors.green,
       );
       
@@ -254,7 +254,7 @@ class RequestController extends GetxController {
         'Success',
         'Request created successfully!',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1),
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
         colorText: Colors.green,
       ); 
       
@@ -263,7 +263,7 @@ class RequestController extends GetxController {
         'Error',
         'Failed to create request: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
         colorText: Colors.red,
       );
     } finally {

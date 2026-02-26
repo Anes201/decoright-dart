@@ -59,8 +59,8 @@ class SelectionScreen<T> extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             tileColor: isSelected
-                ? TColors.primary.withOpacity(0.1)
-                : (isDark ? TColors.darkGrey : TColors.lightGrey).withOpacity(0.5),
+                ? TColors.primary.withValues(alpha: 0.1)
+                : (isDark ? TColors.darkGrey : TColors.lightGrey).withValues(alpha: 0.5),
             selected: isSelected,
             activeColor: TColors.primary,
           );

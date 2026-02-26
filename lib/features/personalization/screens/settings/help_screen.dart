@@ -54,7 +54,7 @@ class HelpScreen extends StatelessWidget {
                         'Info',
                         'Getting started guide would be displayed here',
                         snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.blue.withOpacity(0.1),
+                        backgroundColor: Colors.blue.withValues(alpha: 0.1),
                         colorText: Colors.blue,
                       );
                     },
@@ -70,7 +70,7 @@ class HelpScreen extends StatelessWidget {
                         'Info',
                         'Messaging guide would be displayed here',
                         snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.blue.withOpacity(0.1),
+                        backgroundColor: Colors.blue.withValues(alpha: 0.1),
                         colorText: Colors.blue,
                       );
                     },
@@ -86,7 +86,7 @@ class HelpScreen extends StatelessWidget {
                         'Info',
                         'Order management guide would be displayed here',
                         snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.blue.withOpacity(0.1),
+                        backgroundColor: Colors.blue.withValues(alpha: 0.1),
                         colorText: Colors.blue,
                       );
                     },
@@ -102,7 +102,7 @@ class HelpScreen extends StatelessWidget {
                         'Info',
                         'Account security guide would be displayed here',
                         snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.blue.withOpacity(0.1),
+                        backgroundColor: Colors.blue.withValues(alpha: 0.1),
                         colorText: Colors.blue,
                       );
                     },
@@ -118,7 +118,7 @@ class HelpScreen extends StatelessWidget {
                         'Info',
                         'Payment guide would be displayed here',
                         snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.blue.withOpacity(0.1),
+                        backgroundColor: Colors.blue.withValues(alpha: 0.1),
                         colorText: Colors.blue,
                       );
                     },

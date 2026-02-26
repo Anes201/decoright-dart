@@ -29,8 +29,8 @@ class TLoaders {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: THelperFunctions.isDarkMode(_context!)
-                ? TColors.darkGrey.withOpacity(0.95)
-                : TColors.grey.withOpacity(0.95),
+                ? TColors.darkGrey.withValues(alpha: 0.95)
+                : TColors.grey.withValues(alpha: 0.95),
           ),
           child: Center(
             child: Text(
