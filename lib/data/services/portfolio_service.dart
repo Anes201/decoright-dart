@@ -5,12 +5,23 @@ import 'dart:io';
 class PortfolioService {
   final SupabaseClient _client = SupabaseConfig.client;
 
-  /// Get all portfolio items
-  Future<List<Map<String, dynamic>>> getPortfolioItems() async {
+  /// Get all projects (for Home/Featured)
+  Future<List<Map<String, dynamic>>> getProjects() async {
     final response = await _client
-        .from('projects') // Updated table name
+        .from('projects') 
         .select()
-        .eq('visibility', 'PUBLIC') // Assuming only public by default
+        .eq('visibility', 'PUBLIC') 
+        .order('created_at', ascending: false);
+
+    return List<Map<String, dynamic>>.from(response);
+  }
+
+  /// Get all gallery items (for Portfolio with before/after)
+  Future<List<Map<String, dynamic>>> getGalleryItems() async {
+    final response = await _client
+        .from('gallery_items')
+        .select()
+        .eq('visibility', 'PUBLIC')
         .order('created_at', ascending: false);
 
     return List<Map<String, dynamic>>.from(response);

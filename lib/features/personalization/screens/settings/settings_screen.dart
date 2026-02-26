@@ -10,16 +10,13 @@ import 'package:decoright/utils/helpers/helper_functions.dart';
 
 import '../../../../common/widgets/texts/section_heading.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../utils/constants/sizes.dart';
 import '../../controllers/settings_controller.dart';
 import '../profile/profile_screen.dart';
 import 'language_selection_page.dart';
-import 'promotions_screen.dart';
-import 'favorites_screen.dart';
-import 'support_screen.dart';
 import 'activity_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_service_screen.dart';
-import 'help_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   final SettingsController controller = Get.put(SettingsController());
@@ -29,204 +26,96 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = THelperFunctions.isDarkMode(context);
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.settings),
+        title: Text(l10n.settings),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             children: [
-              TSectionHeading(title: AppLocalizations.of(context)!.myAccount),
-              const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? TColors.dark : TColors.light,
-                  borderRadius: BorderRadius.circular(
-                    24,
-                  ), // Adjust the radius value as needed
-                ),
-                child: Column(
-                  children: [
-                    // profile Tile
-                    SettingsTile(
-                      icon: Iconsax.user,
-                      title: AppLocalizations.of(context)!.personalInformation,
-                      subtitle: AppLocalizations.of(
-                        context,
-                      )!.completeYourProfile,
-                      onTap: () => Get.to(() => ProfileScreen()),
-                    ),
-
-                    // activity Tile
-                    SettingsTile(
-                      icon: Iconsax.activity,
-                      title: AppLocalizations.of(context)!.activity,
-                      onTap: () => Get.to(() => const ActivityScreen()),
-                    ),
-
-                  ],
-                ),
+              /// -- Account Settings
+              TSectionHeading(title: l10n.myAccount, showActionButton: false),
+              const SizedBox(height: TSizes.spaceBtwItems),
+              
+              _buildSettingsContainer(
+                isDark,
+                children: [
+                  SettingsTile(
+                    icon: Iconsax.user,
+                    title: l10n.personalInformation,
+                    subtitle: l10n.completeYourProfile,
+                    onTap: () => Get.to(() => ProfileScreen()),
+                  ),
+                  SettingsTile(
+                    icon: Iconsax.activity,
+                    title: l10n.activity,
+                    onTap: () => Get.to(() => const ActivityScreen()),
+                  ),
+                ],
               ),
 
-              const SizedBox(height: 24),
-              TSectionHeading(title: AppLocalizations.of(context)!.explore),
-              const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? TColors.dark : TColors.light,
-                  borderRadius: BorderRadius.circular(
-                    24,
-                  ), // Adjust the radius value as needed
-                ),
-                child: Column(
-                  children: [
-                    SettingsTile(
-                      icon: Iconsax.percentage_circle,
-                      title: AppLocalizations.of(context)!.promotions,
-                      onTap: () => Get.to(() => const PromotionsScreen()),
-                    ),
+              const SizedBox(height: TSizes.spaceBtwSections),
 
-                    SettingsTile(
-                      icon: Iconsax.star,
-                      title: AppLocalizations.of(context)!.favorites,
-                      onTap: () => Get.to(() => const FavoritesScreen()),
-                    ),
+              /// -- App Settings
+              TSectionHeading(title: l10n.additional, showActionButton: false),
+              const SizedBox(height: TSizes.spaceBtwItems),
 
-                    // Support Tile
-                    SettingsTile(
-                      icon: Iconsax.message_2,
-                      title: AppLocalizations.of(context)!.support,
-                      onTap: () => Get.to(() => const SupportScreen()),
+              _buildSettingsContainer(
+                isDark,
+                children: [
+                  Obx(
+                    () => SettingsTile(
+                      icon: Iconsax.moon,
+                      title: l10n.theme,
+                      subtitle: _getThemeSubtitle(controller.selectedThemeMode.value, context),
+                      onTap: () => Get.to(() => ThemeSelectionScreen()),
                     ),
-
-                    // Help Tile
-                    SettingsTile(
-                      icon: Iconsax.info_circle,
-                      title: 'Help Center',
-                      onTap: () => Get.to(() => const HelpScreen()),
+                  ),
+                  Obx(
+                    () => SettingsTile(
+                      icon: Iconsax.language_circle,
+                      title: l10n.language,
+                      subtitle: _getLanguageName(controller.selectedLanguage.value),
+                      onTap: () => Get.to(() => LanguageSelectionScreen()),
                     ),
-                  ],
-                ),
+                  ),
+                  SettingsTile(
+                    icon: Iconsax.shield_security,
+                    title: 'Privacy Policy',
+                    onTap: () => Get.to(() => const PrivacyPolicyScreen()),
+                  ),
+                  SettingsTile(
+                    icon: Iconsax.document,
+                    title: 'Terms of Service',
+                    onTap: () => Get.to(() => const TermsOfServiceScreen()),
+                  ),
+                  SettingsTile(
+                    icon: Iconsax.logout,
+                    title: l10n.logout,
+                    onTap: () => _handleLogout(context),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 24),
-
-              TSectionHeading(title: AppLocalizations.of(context)!.additional),
-              const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? TColors.dark : TColors.light,
-                  borderRadius: BorderRadius.circular(
-                    24,
-                  ), // Adjust the radius value as needed
-                ),
-                child: Column(
-                  children: [
-                    // Theme Tile
-                    Obx(
-                      () => SettingsTile(
-                        icon: Iconsax.moon,
-                        title: AppLocalizations.of(context)!.theme,
-                        subtitle: _getThemeSubtitle(
-                          controller.selectedThemeMode.value,
-                          context,
-                        ),
-                        onTap: () => Get.to(() => ThemeSelectionScreen()),
-                      ),
-                    ),
-
-                    // Language Tile
-                    Obx(
-                      () => SettingsTile(
-                        icon: Iconsax.language_circle,
-                        title: AppLocalizations.of(context)!.language,
-                        subtitle: _getLanguageName(
-                          controller.selectedLanguage.value,
-                        ),
-                        onTap: () => Get.to(() => LanguageSelectionScreen()),
-                      ),
-                    ),
-
-                    // Privacy Policy Tile
-                    SettingsTile(
-                      icon: Iconsax.shield_security,
-                      title: 'Privacy Policy',
-                      onTap: () => Get.to(() => const PrivacyPolicyScreen()),
-                    ),
-
-                    // Terms of Service Tile
-                    SettingsTile(
-                      icon: Iconsax.document,
-                      title: 'Terms of Service',
-                      onTap: () => Get.to(() => const TermsOfServiceScreen()),
-                    ),
-
-                    // logout Tile
-                    SettingsTile(
-                      icon: Iconsax.logout,
-                      title: AppLocalizations.of(context)!.logout,
-                      onTap: () => _handleLogout(context),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              TSectionHeading(title: AppLocalizations.of(context)!.additional),
-              const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? TColors.dark : TColors.light,
-                  borderRadius: BorderRadius.circular(
-                    24,
-                  ), // Adjust the radius value as needed
-                ),
-                child: Column(
-                  children: [
-                    // Theme Tile
-                    Obx(
-                      () => SettingsTile(
-                        icon: Iconsax.moon,
-                        title: AppLocalizations.of(context)!.theme,
-                        subtitle: _getThemeSubtitle(
-                          controller.selectedThemeMode.value,
-                          context,
-                        ),
-                        onTap: () => Get.to(() => ThemeSelectionScreen()),
-                      ),
-                    ),
-
-                    // Language Tile
-                    Obx(
-                      () => SettingsTile(
-                        icon: Iconsax.language_circle,
-                        title: AppLocalizations.of(context)!.language,
-                        subtitle: _getLanguageName(
-                          controller.selectedLanguage.value,
-                        ),
-                        onTap: () => Get.to(() => LanguageSelectionScreen()),
-                      ),
-                    ),
-
-                    // logout Tile
-                    SettingsTile(
-                      icon: Iconsax.logout,
-                      title: AppLocalizations.of(context)!.logout,
-                      onTap: () => _handleLogout(context),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
+              const SizedBox(height: TSizes.spaceBtwSections),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSettingsContainer(bool isDark, {required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? TColors.dark : TColors.light,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(children: children),
     );
   }
 

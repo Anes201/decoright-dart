@@ -6,44 +6,26 @@ class RequestService {
 
   /// Create a new service request
   Future<Map<String, dynamic>> createServiceRequest({
-    required String serviceType,
+    required String serviceType, // This will now be the service_type_id
     required String description,
     required String location,
-    required String spaceType,
+    required String spaceType,   // This will now be the space_type_id
     int? duration,
     double? areaSqm,
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
 
-    // Generate readable request code (server-side trigger usually handles this, 
-    // but if we need to insert it, we might need a function. 
-    // For now, assuming DB handles default or trigger for request_code if not passed,
-    // OR we just rely on ID. The ERD says request_code is UK.
-    // Let's assume the backend generates it or we don't send it yet).
-
     final response = await _client
-        .from('service_requests') // Verify table name in ERD is SERVICE_REQUEST (singular in ERD diagram title, but usually snake_case plural in supabase. Checking code...)
-        // Code used 'service_requests' before. ERD says SERVICE_REQUEST.
-        // Usually ERD uses singular, Supabase uses plural. keeping existing 'service_requests' 
-        // unless I see errors, but wait, the user said "modify supabase logic according to new updates".
-        // The ERD title is "DecoRight ERD". 
-        // ERD Table: SERVICE_REQUEST. Previous code: 'service_requests'.
-        // I will stick to 'service_requests' as standard Supabase convention, 
-        // but if the user *literally* renamed tables, I might be in trouble. 
-        // However, standard is plural.
+        .from('service_requests') 
         .insert({
-          'client_id': user.id, // ERD says client_id, not user_id
-          'service_type': serviceType,
-          'space_type': spaceType,
+          'user_id': user.id,
+          'service_type_id': serviceType,
+          'space_type_id': spaceType,
           'location': location,
           'description': description,
           'area_sqm': areaSqm,
-          'status': 'PENDING', // ERD says PENDING is the start status
-          // 'duration' is NOT in the ERD for specific request, it might be impl concept.
-          // ERD has construction_start_date/end_date on PROJECT, not request?
-          // Wait, SERVICE_REQUEST simple fields: area_sqm, location, description.
-          // NO DURAITON in ERD for SERVICE_REQUEST.
+          'status': 'Submitted',
         })
         .select()
         .single();
@@ -58,8 +40,8 @@ class RequestService {
 
     final response = await _client
         .from('service_requests')
-        .select()
-        .eq('client_id', user.id) // Updated column name
+        .select('*, service_types(name)')
+        .eq('user_id', user.id) // Updated column name to user_id
         .order('created_at', ascending: false);
 
     return List<Map<String, dynamic>>.from(response);
@@ -69,7 +51,7 @@ class RequestService {
   Future<Map<String, dynamic>> getRequestById(String requestId) async {
     final response = await _client
         .from('service_requests')
-        .select('*, profiles(full_name, role)')
+        .select('*, profiles(full_name, role), service_types(name)')
         .eq('id', requestId)
         .single();
 
@@ -80,7 +62,7 @@ class RequestService {
   Future<List<Map<String, dynamic>>> getAllRequests() async {
     final response = await _client
         .from('service_requests')
-        .select('*, profiles(full_name)')
+        .select('*, profiles(full_name), service_types(name)')
         .order('created_at', ascending: false);
 
     return List<Map<String, dynamic>>.from(response);

@@ -6,29 +6,42 @@ class PortfolioController extends GetxController {
   final PortfolioService _portfolioService = PortfolioService();
 
   final isLoading = false.obs;
-  final portfolioItems = <Map<String, dynamic>>[].obs;
+  final projects = <Map<String, dynamic>>[].obs;
+  final galleryItems = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadPortfolio();
+    loadAll();
   }
 
-  Future<void> loadPortfolio() async {
+  Future<void> loadAll() async {
+    isLoading.value = true;
+    await Future.wait([
+      loadProjects(),
+      loadGalleryItems(),
+    ]);
+    isLoading.value = false;
+  }
+
+  Future<void> loadProjects() async {
     try {
-      isLoading.value = true;
-      final items = await _portfolioService.getPortfolioItems();
-      portfolioItems.value = items;
+      final items = await _portfolioService.getProjects();
+      projects.value = items;
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to load portfolio: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
-    } finally {
-      isLoading.value = false;
+      print('Error loading projects: $e');
     }
   }
+
+  Future<void> loadGalleryItems() async {
+    try {
+      final items = await _portfolioService.getGalleryItems();
+      galleryItems.value = items;
+    } catch (e) {
+      print('Error loading gallery items: $e');
+    }
+  }
+
+  // Backward compatibility/Legacy call if needed
+  Future<void> loadPortfolio() => loadAll();
 }

@@ -5,6 +5,8 @@ import '../../../../utils/constants/image_strings.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/helpers/helper_functions.dart';
 import '../../controllers/auth_controller.dart';
+import '../login/login_screen.dart';
+import '../signup/signup.dart';
 import 'email_entry_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -109,6 +111,43 @@ class WelcomeScreen extends StatelessWidget {
                 onPressed: () => controller.loginAsGuest(),
                 child: const Text("Continue as Guest"),
               ),
+            ),
+            const SizedBox(height: TSizes.spaceBtwItems),
+
+            /// Login & Sign Up Links
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Already have an account? "),
+                TextButton(
+                  onPressed: () => Get.to(() => const LoginScreen()),
+                  style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                  child: Text(
+                    "Sign In",
+                    style: TextStyle(
+                      color: TColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("New here? "),
+                TextButton(
+                  onPressed: () => Get.to(() => const SignUpScreen()),
+                  style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                  child: Text(
+                    "Create account",
+                    style: TextStyle(
+                      color: TColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
           ],

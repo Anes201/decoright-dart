@@ -86,7 +86,7 @@ class ChatService {
     // Supabase can query nested: chat_rooms!inner(request_id)
     final response = await _client
         .from('messages')
-        .select('*, chat_rooms!inner(request_id), profiles(first_name, last_name)') // updated profile cols
+        .select('*, chat_rooms!inner(request_id), profiles(full_name)') // updated profile cols
         .eq('chat_rooms.request_id', requestId)
         .order('created_at', ascending: true); // created_at
 

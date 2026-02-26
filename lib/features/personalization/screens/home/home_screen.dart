@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:decoright/navigation_menu.dart';
 import 'package:decoright/features/personalization/controllers/profile_controller.dart';
 import 'package:decoright/features/portfolio/controllers/portfolio_controller.dart';
+import 'package:decoright/features/portfolio/screens/project_detail_screen.dart'; // Added import
 import 'package:decoright/features/requests/controllers/request_controller.dart';
 import 'package:decoright/features/requests/screens/create_request_screen.dart';
 import 'package:decoright/utils/constants/colors.dart';
@@ -32,14 +34,16 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Status Shortcut: Your Requests (if any)
+                  /// Status Shortcut: Active Projects
                   Obx(() {
                     if (requestController.requests.isNotEmpty) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildSectionHeader(context, "Your Requests", () {
-                            // Navigate to requests tab or screen
+                          _buildSectionHeader(context, "Active Projects", () {
+                            // Navigate to requests tab (Index 2)
+                            final nav = Get.find<NavigationController>();
+                            nav.selectedIndex.value = 2;
                           }),
                           const SizedBox(height: TSizes.spaceBtwItems),
                           _buildRecentRequestCard(context, requestController.requests.first),
@@ -51,7 +55,11 @@ class HomeScreen extends StatelessWidget {
                   }),
 
                   /// Portfolio Highlights / Featured Projects
-                  _buildSectionHeader(context, "Featured Projects", null),
+                  _buildSectionHeader(context, "Featured Projects", () {
+                    // Navigate to Gallery tab (Index 1)
+                    final nav = Get.find<NavigationController>();
+                    nav.selectedIndex.value = 1;
+                  }),
                   const SizedBox(height: TSizes.spaceBtwItems),
                   
                   Obx(() {
@@ -59,21 +67,17 @@ class HomeScreen extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
                     
-                    if (portfolioController.portfolioItems.isEmpty) {
+                    if (portfolioController.projects.isEmpty) {
                       return const Center(child: Text("No featured projects yet."));
                     }
 
-                    return MasonryGridView.count(
+                    return ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      mainAxisSpacing: TSizes.gridViewSpacing,
-                      crossAxisSpacing: TSizes.gridViewSpacing,
-                      itemCount: portfolioController.portfolioItems.length > 4 
-                          ? 4 
-                          : portfolioController.portfolioItems.length,
+                      itemCount: portfolioController.projects.length > 5 ? 5 : portfolioController.projects.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
                       itemBuilder: (context, index) {
-                        final item = portfolioController.portfolioItems[index];
+                        final item = portfolioController.projects[index];
                         return _buildPortfolioCard(context, item);
                       },
                     );
@@ -136,7 +140,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Icon(Iconsax.magicpen),
                   SizedBox(width: 8),
-                  Text("Request a Design", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("Request a Service", style: TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -165,7 +169,10 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildRecentRequestCard(BuildContext context, Map<String, dynamic> request) {
     final status = request['status'] ?? 'Unknown';
-    final serviceType = request['service_type'] ?? 'Service';
+    final serviceTypeData = request['service_types'];
+    final serviceType = ((serviceTypeData is Map ? serviceTypeData['name'] : request['service_type']) ?? 'Service')
+        .toString()
+        .replaceAll('_', ' ');
 
     return Card(
       child: ListTile(
@@ -177,7 +184,7 @@ class HomeScreen extends StatelessWidget {
           ),
           child: const Icon(Iconsax.note_1, color: TColors.primary),
         ),
-        title: Text(serviceType),
+        title: Text(serviceType.toString().replaceAll('_', ' ')),
         subtitle: Text("Status: $status"),
         trailing: const Icon(Iconsax.arrow_right_3, size: 18),
         onTap: () {
@@ -188,28 +195,97 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildPortfolioCard(BuildContext context, Map<String, dynamic> item) {
-    final imageUrl = item['media_url'] as String?;
+    final isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final imageUrl = item['main_image_url'] as String?;
+    final title = item['title'] ?? 'Untitled Project';
+    final service = item['service_type']?.toString().replaceAll('_', ' ') ?? 'Interior';
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (imageUrl != null && imageUrl.isNotEmpty)
-            CachedNetworkImage(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(height: 100, color: Colors.grey[200]),
+    return GestureDetector(
+      onTap: () => Get.to(() => ProjectDetailScreen(project: item)),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
+          color: isDark ? TColors.darkContainer : Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
             )
-          else
-            Container(height: 100, color: Colors.grey[200], child: const Icon(Iconsax.image)),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              item['title'] ?? 'Untitled',
-              style: Theme.of(context).textTheme.labelLarge,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Project Image
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(TSizes.cardRadiusLg)),
+              child: imageUrl != null && imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      height: 200,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        height: 200,
+                        color: isDark ? Colors.grey[800] : Colors.grey[200],
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                      errorWidget: (context, url, error) => _buildNoImagePlaceholder(isDark),
+                    )
+                  : _buildNoImagePlaceholder(isDark),
+            ),
+
+            /// Project Info
+            Padding(
+              padding: const EdgeInsets.all(TSizes.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const Icon(Iconsax.arrow_right_3, size: 18),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    service,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(color: TColors.primary),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoImagePlaceholder(bool isDark) {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      color: isDark ? Colors.grey[900] : Colors.grey[100],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Iconsax.image, size: 48, color: isDark ? Colors.grey[700] : Colors.grey[400]),
+          const SizedBox(height: 8),
+          Text(
+            "No images presented",
+            style: TextStyle(
+              color: isDark ? Colors.grey[600] : Colors.grey[500],
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

@@ -12,13 +12,14 @@ class CreateRequestScreen extends StatelessWidget {
     final controller = Get.find<RequestController>();
     
     // Reset form state on new entry (optional, depends on UX pref)
-    // controller.selectedServiceType.value = null;
+    // controller.selectedServiceTypeId.value = null;
     // controller.descriptionController.clear();
     // controller.selectedFiles.clear();
 
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Request'),
+        title: const Text('Request a Service'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
@@ -34,39 +35,95 @@ class CreateRequestScreen extends StatelessWidget {
                   prefixIcon: Icon(Iconsax.category),
                   hintText: 'Select Service Type',
                 ),
-                value: controller.selectedServiceType.value,
-                items: RequestController.serviceTypes
+                isExpanded: true,
+                value: controller.selectedServiceTypeId.value,
+                items: controller.serviceTypes
                     .map((service) => DropdownMenuItem(
-                          value: service,
-                          child: Text(service),
+                          value: service['id'] as String,
+                          child: Text(
+                            service['name'].toString().replaceAll('_', ' '),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ))
                     .toList(),
-                onChanged: (value) => controller.selectedServiceType.value = value,
+                onChanged: (value) => controller.selectedServiceTypeId.value = value,
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
 
-            /// Description
-            Text('Description', style: Theme.of(context).textTheme.titleMedium),
+            /// Space Type Dropdown
+            Text('Space Type', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: TSizes.spaceBtwInputFields / 2),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Iconsax.house),
+                  hintText: 'Select Space Type',
+                ),
+                isExpanded: true,
+                value: controller.selectedSpaceTypeId.value,
+                items: controller.spaceTypes
+                    .map((space) => DropdownMenuItem(
+                          value: space['id'] as String,
+                          child: Text(
+                            space['name'].toString().replaceAll('_', ' '),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ))
+                    .toList(),
+                onChanged: (value) => controller.selectedSpaceTypeId.value = value,
+              ),
+            ),
+            const SizedBox(height: TSizes.spaceBtwSections),
+
+            /// Location
+            Text('Location', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: TSizes.spaceBtwInputFields / 2),
             TextFormField(
-              controller: controller.descriptionController,
-              maxLines: 5,
+              controller: controller.locationController,
               decoration: const InputDecoration(
-                hintText: 'Describe your project requirements...',
+                hintText: 'Enter project location...',
+                prefixIcon: Icon(Iconsax.location),
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
 
-            /// Duration
-            Text('Duration (in days)', style: Theme.of(context).textTheme.titleMedium),
+            /// Area
+            Text('Total Area (sqm)', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: TSizes.spaceBtwInputFields / 2),
+            TextFormField(
+              controller: controller.areaController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                hintText: 'Enter area in square meters',
+                prefixIcon: Icon(Iconsax.maximize),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: TSizes.spaceBtwSections),
+
+            /// Description
+            Text('Description / Special Requirements', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: TSizes.spaceBtwInputFields / 2),
+            TextFormField(
+              controller: controller.descriptionController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Describe your requirements...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: TSizes.spaceBtwSections),
+
+            /// Duration (Optional)
+            Text('Requested Duration (Days)', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: TSizes.spaceBtwInputFields / 2),
             TextFormField(
               controller: controller.durationController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                hintText: 'Enter estimated duration in days',
+                hintText: 'Optional: estimated days',
                 prefixIcon: Icon(Iconsax.clock),
                 border: OutlineInputBorder(),
               ),
@@ -77,7 +134,7 @@ class CreateRequestScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Attachments', style: Theme.of(context).textTheme.titleMedium),
+                Flexible(child: Text('Attachments (Optional)', style: Theme.of(context).textTheme.titleMedium)),
                 TextButton.icon(
                   onPressed: controller.pickFiles,
                   icon: const Icon(Iconsax.document_upload),
@@ -138,7 +195,7 @@ class CreateRequestScreen extends StatelessWidget {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text('Submit Request'),
+                      : const Text('Submit Service Request'),
                 ),
               ),
             ),

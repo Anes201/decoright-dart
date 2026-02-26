@@ -91,7 +91,10 @@ class _RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = request['status'] ?? 'Unknown';
-    final serviceType = request['service_type'] ?? 'Service';
+    final serviceTypeData = request['service_types'];
+    final serviceType = ((serviceTypeData is Map ? serviceTypeData['name'] : request['service_type']) ?? 'Service')
+        .toString()
+        .replaceAll('_', ' ');
     final description = request['description'] ?? '';
     final requestId = request['id'];
     final updated_at = request['updated_at'];

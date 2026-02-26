@@ -1,3 +1,4 @@
+import 'package:decoright/core/config/supabase_config.dart';
 import 'package:decoright/data/services/auth_service.dart';
 import 'package:decoright/data/services/request_service.dart';
 import 'package:get/get.dart';
@@ -44,15 +45,34 @@ class MessageController extends GetxController {
 
       final requests = await _requestService.getMyRequests();
       
-      privateMessages.assignAll(requests.map((req) {
-        return ConversationItem(
-          requestId: req['id'],
-          userName: req['service_type'] ?? 'Service Request',
-          lastMessage: req['description'] ?? 'No description provided',
-          timestamp: DateTime.parse(req['updated_at'] ?? req['created_at']),
-          unreadCount: 0, // Placeholder for now
-        );
-      }).toList());
+      final List<ConversationItem> items = [];
+      
+      for (final req in requests) {
+        final requestId = req['id'];
+        
+        // Fetch last message for this request
+        final lastMsgResponse = await SupabaseConfig.client
+            .from('messages')
+            .select('content, created_at')
+            .eq('request_id', requestId)
+            .order('created_at', ascending: false)
+            .limit(1)
+            .maybeSingle();
+
+        items.add(ConversationItem(
+          requestId: requestId,
+          userName: (req['service_types']?['name'] ?? req['service_type'] ?? 'Service Request')
+              .toString()
+              .replaceAll('_', ' '),
+          lastMessage: lastMsgResponse?['content'] ?? req['description'] ?? 'No messages yet',
+          timestamp: DateTime.parse(lastMsgResponse?['created_at'] ?? req['updated_at'] ?? req['created_at']),
+          unreadCount: 0, 
+        ));
+      }
+
+      // Sort by timestamp descending
+      items.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      privateMessages.assignAll(items);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load conversations: $e');
     } finally {

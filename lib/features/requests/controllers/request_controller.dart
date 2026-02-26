@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:decoright/core/config/supabase_config.dart';
+
 import 'package:decoright/navigation_menu.dart'; // Import NavigationController
 
 import 'package:decoright/data/services/chat_service.dart';
@@ -14,38 +16,39 @@ class RequestController extends GetxController {
   final RequestService _requestService = RequestService();
   final ChatService _chatService = ChatService(); // Instantiate ChatService
 
-  static const List<String> serviceTypes = [
-    'INTERIOR_DESIGN',
-    'FIXED_DESIGN',
-    'DECOR_CONSULTATION',
-    'BUILDING_RENOVATION',
-    'FURNITURE_REQUEST',
-  ];
-
-  static const List<String> spaceTypes = [
-    'HOUSES_AND_ROOMS',
-    'COMMERCIAL_SHOPS',
-    'SCHOOLS_AND_NURSERIES',
-    'OFFICES_RECEPTION',
-    'DORMITORY_LODGINGS',
-  ];
-
   final isLoading = false.obs;
   final requests = <Map<String, dynamic>>[].obs;
   
+  // Dynamic Types from Supabase
+  final serviceTypes = <Map<String, dynamic>>[].obs;
+  final spaceTypes = <Map<String, dynamic>>[].obs;
+  
   // Create Request Form State
-  final selectedServiceType = RxnString();
-  final selectedSpaceType = RxnString();
+  final selectedServiceTypeId = RxnString();
+  final selectedSpaceTypeId = RxnString();
   final descriptionController = TextEditingController();
-  final locationController = TextEditingController(); // Added
-  final areaController = TextEditingController(); // Added
+  final locationController = TextEditingController();
+  final areaController = TextEditingController();
   final durationController = TextEditingController();
   final selectedFiles = <File>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    fetchTypes();
     loadRequests();
+  }
+
+  Future<void> fetchTypes() async {
+    try {
+      final sTypes = await SupabaseConfig.client.from('service_types').select('id, name');
+      final spTypes = await SupabaseConfig.client.from('space_types').select('id, name');
+      
+      serviceTypes.value = List<Map<String, dynamic>>.from(sTypes);
+      spaceTypes.value = List<Map<String, dynamic>>.from(spTypes);
+    } catch (e) {
+      print('Error fetching types: $e');
+    }
   }
 
   /// Load service requests (all for admin, own for customer)
@@ -178,7 +181,7 @@ class RequestController extends GetxController {
   /// Create a new service request
   Future<void> createRequest() async {
     try {
-      if (selectedServiceType.value == null) {
+      if (selectedServiceTypeId.value == null) {
         Get.snackbar('Error', 'Please select a service type');
         return;
       }
@@ -197,16 +200,13 @@ class RequestController extends GetxController {
       
       // 1. Create Request
       final request = await _requestService.createServiceRequest(
-        serviceType: selectedServiceType.value!,
+        // The serviceType argument in service might need changing or just pass ID
+        // Wait, RequestService.createServiceRequest expects serviceType as String but uses it for lookup.
+        // I'll update RequestService to accept IDs directly for better efficiency.
+        serviceType: selectedServiceTypeId.value!, 
         description: descriptionController.text.trim(),
-        // For now, if UI inputs don't exist, we might need default values or simple hardcoding to test logic
-        // But since I added controllers, I assume I should use them.
-        // However, the UI screen isn't being updated in this task scope (it was not explicitly asked but implied "modify supabase logic").
-        // I will use "TBD" for location if empty, and default space type if null to avoid crash, 
-        // OR better, I should have updated the UI? 
-        // The prompt said "modify Supabase logic". I'll use safe defaults if controllers are empty.
-        location: locationController.text.isNotEmpty ? locationController.text.trim() : "Unknown Location",
-        spaceType: selectedSpaceType.value ?? 'HOUSES_AND_ROOMS', // Default backup
+        location: locationController.text.trim().isNotEmpty ? locationController.text.trim() : "TBD",
+        spaceType: selectedSpaceTypeId.value ?? '', 
         areaSqm: double.tryParse(areaController.text.trim()),
         duration: duration,
       );
@@ -223,8 +223,8 @@ class RequestController extends GetxController {
       }
       
       // Clear form
-      selectedServiceType.value = null;
-      selectedSpaceType.value = null;
+      selectedServiceTypeId.value = null;
+      selectedSpaceTypeId.value = null;
       descriptionController.clear();
       durationController.clear();
       locationController.clear();

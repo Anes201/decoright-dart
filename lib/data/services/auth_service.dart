@@ -83,8 +83,8 @@ class AuthService {
   }
 
   /// Send password reset email
-  Future<void> resetPassword({required String email}) async {
-    await _client.auth.resetPasswordForEmail(email);
+  Future<void> resetPassword({required String email, String? redirectTo}) async {
+    await _client.auth.resetPasswordForEmail(email, redirectTo: redirectTo);
   }
 
   /// Update password (after reset)

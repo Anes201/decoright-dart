@@ -4,6 +4,7 @@ import 'package:decoright/features/authentication/screens/signup/verify_email_sc
 import 'package:decoright/features/authentication/screens/entry/profile_completion_screen.dart';
 import 'package:decoright/features/authentication/screens/entry/welcome_screen.dart';
 import 'package:decoright/features/authentication/screens/onboarding/onboarding_screen.dart';
+import 'package:decoright/features/authentication/screens/password_configuration/new_password_screen.dart';
 import 'package:decoright/navigation_menu.dart';
 import 'package:decoright/utils/local_storage/storage_utility.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,22 @@ class AuthController extends GetxController {
 
   final AuthService _authService = AuthService();
 
+  // Form Keys
+  final emailEntryFormKey = GlobalKey<FormState>();
+
   @override
   void onReady() {
     super.onReady();
+    
+    // Listen for auth state changes globally (helpful for Password Recovery/Deep links)
+    _authService.authStateChanges.listen((AuthState state) {
+      TLoggerHelper.debug("Auth state change: ${state.event}");
+      if (state.event == AuthChangeEvent.passwordRecovery) {
+        TLoggerHelper.info("Password recovery triggered, navigating to NewPasswordScreen");
+        Get.to(() => const NewPasswordScreen());
+      }
+    });
+
     screenRedirect();
   }
 
@@ -144,12 +158,10 @@ class AuthController extends GetxController {
   Future<void> loginWithOtp() async {
     try {
       isLoading.value = true;
-      final email = emailController.text.trim();
-
-      if (email.isEmpty) {
+      if (email.isEmpty || !GetUtils.isEmail(email)) {
         Get.snackbar(
-          'Error',
-          'Please enter your email',
+          'Invalid Email',
+          'Please enter a valid email address.',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.withOpacity(0.1),
           colorText: Colors.red,
