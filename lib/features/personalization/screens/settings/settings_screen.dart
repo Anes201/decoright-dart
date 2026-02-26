@@ -17,6 +17,8 @@ import 'language_selection_page.dart';
 import 'activity_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_service_screen.dart';
+import 'faq_screen.dart';
+import '../../controllers/support_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
   final SettingsController controller = Get.put(SettingsController());
@@ -55,6 +57,18 @@ class SettingsScreen extends StatelessWidget {
                     icon: Iconsax.activity,
                     title: l10n.activity,
                     onTap: () => Get.to(() => const ActivityScreen()),
+                  ),
+                  SettingsTile(
+                    icon: Iconsax.support,
+                    title: 'Support',
+                    subtitle: 'Contact us on WhatsApp or Social Media',
+                    onTap: () => _showSupportBottomSheet(context),
+                  ),
+                  SettingsTile(
+                    icon: Iconsax.message_question,
+                    title: 'FAQ',
+                    subtitle: 'Frequently Asked Questions',
+                    onTap: () => Get.to(() => const FAQScreen()),
                   ),
                 ],
               ),
@@ -191,5 +205,167 @@ class SettingsScreen extends StatelessWidget {
         );
       }
     }
+  }
+
+  void _showSupportBottomSheet(BuildContext context) {
+    final supportController = Get.put(SupportController());
+    final isDark = THelperFunctions.isDarkMode(context);
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace, vertical: TSizes.md),
+        decoration: BoxDecoration(
+          color: isDark ? TColors.dark : Colors.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /// -- Drag Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: TSizes.spaceBtwSections),
+
+              /// -- Title
+              Text(
+                'Support & Contact',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: TSizes.sm),
+              Text(
+                'How can we help you today?',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+              ),
+              const SizedBox(height: TSizes.spaceBtwSections),
+              
+              Obx(() {
+                if (supportController.isLoadingLinks.value) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: TSizes.spaceBtwSections),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (supportController.socialLinks.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: TSizes.spaceBtwSections),
+                    child: Center(child: Text('No support links available.')),
+                  );
+                }
+
+                // Separate Direct and Social links
+                final directLinks = supportController.socialLinks.entries
+                    .where((e) => e.key == 'whatsapp' || e.key == 'phone').toList();
+                final socialLinks = supportController.socialLinks.entries
+                    .where((e) => e.key != 'whatsapp' && e.key != 'phone').toList();
+
+                return Column(
+                  children: [
+                    /// -- Direct Contact Section
+                    if (directLinks.isNotEmpty) ...[
+                      Row(
+                        children: directLinks.map((entry) {
+                          final isWhatsapp = entry.key == 'whatsapp';
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () => supportController.launchSupportUrl(entry.key, entry.value),
+                              child: Container(
+                                margin: EdgeInsets.only(
+                                  right: entry == directLinks.first && directLinks.length > 1 ? TSizes.sm : 0,
+                                  left: entry == directLinks.last && directLinks.length > 1 ? TSizes.sm : 0,
+                                ),
+                                padding: const EdgeInsets.all(TSizes.md),
+                                decoration: BoxDecoration(
+                                  color: isWhatsapp ? const Color(0xFFE8F8EF) : TColors.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: (isWhatsapp ? const Color(0xFF25D366) : TColors.primary).withOpacity(0.2),
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      isWhatsapp ? Icons.chat : Iconsax.call,
+                                      color: isWhatsapp ? const Color(0xFF25D366) : TColors.primary,
+                                      size: 32,
+                                    ),
+                                    const SizedBox(height: TSizes.xs),
+                                    Text(
+                                      entry.key.capitalizeFirst!,
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: isWhatsapp ? const Color(0xFF25D366) : TColors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: TSizes.spaceBtwSections),
+                    ],
+
+                    /// -- Social Media Section
+                    if (socialLinks.isNotEmpty) ...[
+                      const Divider(),
+                      const SizedBox(height: TSizes.spaceBtwItems),
+                      Text(
+                        'Follow Us',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey),
+                      ),
+                      const SizedBox(height: TSizes.spaceBtwItems),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: socialLinks.map((entry) {
+                          IconData icon;
+                          Color color;
+                          
+                          switch (entry.key) {
+                            case 'facebook':
+                              icon = Icons.facebook;
+                              color = const Color(0xFF1877F2);
+                              break;
+                            case 'instagram':
+                              icon = Iconsax.instagram;
+                              color = const Color(0xFFE4405F);
+                              break;
+                            default:
+                              icon = Iconsax.link;
+                              color = Colors.grey;
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: TSizes.md),
+                            child: IconButton(
+                              onPressed: () => supportController.launchSupportUrl(entry.key, entry.value),
+                              icon: Icon(icon, color: color, size: 32),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ],
+                );
+              }),
+              const SizedBox(height: TSizes.spaceBtwSections),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

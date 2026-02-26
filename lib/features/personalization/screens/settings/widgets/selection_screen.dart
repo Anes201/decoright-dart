@@ -1,7 +1,5 @@
-// screens/selection_screen.dart
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
+import '../../../../../utils/helpers/helper_functions.dart';
+import '../../../../../utils/constants/colors.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
 
 class SelectionScreen<T> extends StatelessWidget {
@@ -20,10 +18,16 @@ class SelectionScreen<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = THelperFunctions.isDarkMode(context);
+
     return Scaffold(
-      appBar: TAppBar(showBackArrow: true, title: Text(title), centerTitle: true, elevation: 0),
-      body: // Replace the ListView.builder body with this for super clean look:
-      ListView.separated(
+      appBar: TAppBar(
+        showBackArrow: true, 
+        title: Text(title, style: TextStyle(color: isDark ? TColors.light : TColors.dark)), 
+        centerTitle: true, 
+        elevation: 0
+      ),
+      body: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         itemCount: options.length,
         separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -45,6 +49,7 @@ class SelectionScreen<T> extends StatelessWidget {
               style: TextStyle(
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 fontSize: 17,
+                color: isDark ? TColors.light : TColors.dark,
               ),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 8),
@@ -52,10 +57,10 @@ class SelectionScreen<T> extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             tileColor: isSelected
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                : null,
+                ? TColors.primary.withOpacity(0.1)
+                : (isDark ? TColors.darkGrey : TColors.lightGrey).withOpacity(0.5),
             selected: isSelected,
-            activeColor: Theme.of(context).colorScheme.primary,
+            activeColor: TColors.primary,
           );
         },
       ),

@@ -158,6 +158,7 @@ class AuthController extends GetxController {
   Future<void> loginWithOtp() async {
     try {
       isLoading.value = true;
+      final email = emailController.text.trim();
       if (email.isEmpty || !GetUtils.isEmail(email)) {
         Get.snackbar(
           'Invalid Email',
