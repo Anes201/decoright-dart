@@ -40,9 +40,9 @@ class TImages {
   static const String verifyIllustration = "assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif";
 
   // -- OnBoarding Texts
-  static const String onBoardingImage1 = "assets/images/onboarding_images/image1.gif";
-  static const String onBoardingImage2 = "assets/images/onboarding_images/image2.gif";
-  static const String onBoardingImage3 = "assets/images/onboarding_images/image3.gif";
+  static const String onBoardingImage1 = "assets/images/onboarding_images/onboarding_transform_space.png";
+  static const String onBoardingImage2 = "assets/images/onboarding_images/onboarding_furnishing_solutions.png";
+  static const String onBoardingImage3 = "assets/images/onboarding_images/onboarding_professional_service.png";
 
 
 

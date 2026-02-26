@@ -19,9 +19,9 @@ class OnBoardingSkip extends StatelessWidget {
       right: TSizes.defaultSpace,
       child: TextButton(
         onPressed: () => Get.offAll(() => const LoginScreen()),
-        child: Text(
+        child: const Text(
           'Skip',
-          style: TextStyle(color: TColors.primary),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
     );

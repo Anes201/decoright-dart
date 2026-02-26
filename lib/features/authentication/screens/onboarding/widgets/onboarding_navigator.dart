@@ -20,8 +20,8 @@ class OnBoardNavigation extends StatelessWidget {
       bottom: TDeviceUtils.getBottomNavigationBarHeight() + 25,
       left: TSizes.defaultSpace,
       child: SmoothPageIndicator(
-        effect: ExpandingDotsEffect(
-            activeDotColor: TColors.primary, dotHeight: 6),
+        effect: const ExpandingDotsEffect(
+            activeDotColor: Colors.white, dotHeight: 6, dotColor: Colors.white24),
         controller: controller.pagecontroller,
         onDotClicked: controller.dotNavigationClick,
         count: 3,
