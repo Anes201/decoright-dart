@@ -46,27 +46,7 @@ class ChatController extends GetxController {
       final data = await _chatService.getMessages(requestId);
       final currentUserId = _authService.getCurrentUser()?.id ?? '';
 
-      messages.value = data.map((msg) {
-        final list = List<dynamic>.from(msg['attachments'] ?? []);
-        if (msg['media_url'] != null) {
-          list.add({
-            'path': msg['media_url'],
-            'name': msg['message_type'] == 'AUDIO' ? 'Voice Message' : 'Image',
-            'isLocal': false,
-            'type': msg['message_type']?.toLowerCase(),
-          });
-        }
-
-        return MessageModel(
-          id: msg['id'],
-          text: msg['content'],
-          type: _determineMessageType(msg),
-          isUserMessage: msg['sender_id'] == currentUserId,
-          timestamp: DateTime.parse(msg['created_at']),
-          senderName: msg['profiles']?['full_name'] ?? 'Unknown',
-          attachments: list,
-        );
-      }).toList().reversed.toList();
+      messages.value = data.map((msg) => _mapMessage(msg, currentUserId)).toList().reversed.toList();
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -105,40 +85,14 @@ class ChatController extends GetxController {
         final eventType = payload['event_type'];
 
         if (eventType == 'INSERT') {
-          final list = List<dynamic>.from(data['attachments'] ?? []);
-          if (data['media_url'] != null) {
-            list.add({
-              'path': data['media_url'],
-              'name': data['message_type'] == 'AUDIO' ? 'Voice Message' : 'Image',
-              'isLocal': false,
-              'type': data['message_type']?.toLowerCase(),
-            });
-          }
-
-          final message = MessageModel(
-            id: data['id'],
-            text: data['content'],
-            type: _determineMessageType(data),
-            isUserMessage: data['sender_id'] == currentUserId,
-            timestamp: DateTime.parse(data['created_at']),
-            senderName: 'Other User',
-            attachments: list,
-          );
+          final message = _mapMessage(data, currentUserId);
           if (!messages.any((m) => m.id == message.id)) {
             messages.insert(0, message);
           }
         } else if (eventType == 'UPDATE') {
           final index = messages.indexWhere((m) => m.id == data['id']);
           if (index != -1) {
-            messages[index] = MessageModel(
-              id: data['id'],
-              text: data['content'],
-              type: _determineMessageType(data),
-              isUserMessage: data['sender_id'] == currentUserId,
-              timestamp: DateTime.parse(data['created_at']),
-              senderName: messages[index].senderName,
-              attachments: data['attachments'] ?? [],
-            );
+            messages[index] = _mapMessage(data, currentUserId, oldSenderName: messages[index].senderName);
           }
         }
       },
@@ -187,15 +141,7 @@ class ChatController extends GetxController {
       // Update the temporary message with real ID and data
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
-        messages[index] = MessageModel(
-          id: response['id'],
-          text: response['content'],
-          type: MessageType.audio,
-          isUserMessage: true,
-          timestamp: DateTime.parse(response['created_at']),
-          senderName: 'You',
-          attachments: response['attachments'] ?? [],
-        );
+        messages[index] = _mapMessage(response, currentUserId, isMine: true);
       }
     } catch (e) {
       Get.snackbar(
@@ -259,15 +205,7 @@ class ChatController extends GetxController {
       // Update the temporary message with real ID and data
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
-        messages[index] = MessageModel(
-          id: response['id'],
-          text: response['content'],
-          type: MessageType.text,
-          isUserMessage: true,
-          timestamp: DateTime.parse(response['created_at']),
-          senderName: 'You',
-          attachments: response['attachments'] ?? [],
-        );
+        messages[index] = _mapMessage(response, currentUserId, isMine: true);
       }
     } catch (e) {
       Get.snackbar(
@@ -322,6 +260,28 @@ class ChatController extends GetxController {
     if (index >= 0 && index < selectedAttachments.length) {
       selectedAttachments.removeAt(index);
     }
+  }
+
+  MessageModel _mapMessage(Map<String, dynamic> msg, String currentUserId, {String? oldSenderName, bool? isMine}) {
+    final list = List<dynamic>.from(msg['attachments'] ?? []);
+    if (msg['media_url'] != null) {
+      list.add({
+        'path': msg['media_url'],
+        'name': msg['message_type'] == 'AUDIO' ? 'Voice Message' : 'Image',
+        'isLocal': false,
+        'type': msg['message_type']?.toLowerCase(),
+      });
+    }
+
+    return MessageModel(
+      id: msg['id'],
+      text: msg['content'],
+      type: _determineMessageType(msg),
+      isUserMessage: isMine ?? (msg['sender_id'] == currentUserId),
+      timestamp: DateTime.parse(msg['created_at']),
+      senderName: isMine == true ? 'You' : (msg['profiles']?['full_name'] ?? oldSenderName ?? 'Unknown'),
+      attachments: list,
+    );
   }
 
   /// Delete a message
