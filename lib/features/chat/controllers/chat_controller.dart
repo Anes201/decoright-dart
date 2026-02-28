@@ -301,7 +301,7 @@ class ChatController extends GetxController {
 
   MessageModel _mapMessage(Map<String, dynamic> msg, String currentUserId, {String? oldSenderName, bool? isMine}) {
     final list = List<dynamic>.from(msg['attachments'] ?? []);
-    if (msg['media_url'] != null) {
+    if (msg['media_url'] != null && list.isEmpty) {
       list.add({
         'path': msg['media_url'],
         'name': msg['message_type'] == 'AUDIO' ? 'Voice Message' : 'Image',
@@ -327,19 +327,7 @@ class ChatController extends GetxController {
       await _chatService.deleteMessage(messageId);
       // Local update will naturally happen via realtime or manual refresh
       // but let's update locally for instant feedback if desired
-      final index = messages.indexWhere((m) => m.id == messageId);
-      if (index != -1) {
-        final old = messages[index];
-        messages[index] = MessageModel(
-          id: old.id,
-          text: '(Message deleted)',
-          type: MessageType.text,
-          isUserMessage: old.isUserMessage,
-          timestamp: old.timestamp,
-          senderName: old.senderName,
-          attachments: [],
-        );
-      }
+      messages.removeWhere((m) => m.id == messageId);
     } catch (e) {
       Get.snackbar(
         'Error',
