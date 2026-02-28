@@ -82,24 +82,34 @@ class ChatMessageWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Attachments Grid/List
+                    // Attachments Grid/List — show for image type messages too
                     if (attachmentList.isNotEmpty && type != MessageType.audio) ...[
                       _buildAttachments(context, attachmentList, isUserMessage),
-                      if (message.trim().isNotEmpty && message.trim() != 'Pièce jointe')
+                      if (message.trim().isNotEmpty &&
+                          message.trim() != 'Pièce jointe' &&
+                          message.trim() != 'Image')
                         const SizedBox(height: 8),
                     ],
 
                     if (type == MessageType.audio && message.trim() != '(Message deleted)')
                       _buildAudioMessage(context, attachmentList, isUserMessage),
 
-                    if (type != MessageType.audio && message.trim().isNotEmpty && message.trim() != 'Pièce jointe')
-                      Text(
-                        message.trim(),
-                        style: TextStyle(
-                          color: message.trim() == '(Message deleted)' ? (isUserMessage ? Colors.white70 : Colors.grey) : textColor,
-                          fontSize: 15,
-                          height: 1.3,
-                          fontStyle: message.trim() == '(Message deleted)' ? FontStyle.italic : null,
+                    if (type != MessageType.audio &&
+                        message.trim().isNotEmpty &&
+                        message.trim() != 'Pièce jointe' &&
+                        message.trim() != 'Image')
+                      Padding(
+                        padding: EdgeInsets.only(top: attachmentList.isNotEmpty ? 8.0 : 0.0),
+                        child: Text(
+                          message.trim(),
+                          style: TextStyle(
+                            color: message.trim() == '(Message deleted)'
+                                ? (isUserMessage ? Colors.white70 : Colors.grey)
+                                : textColor,
+                            fontSize: 15,
+                            height: 1.3,
+                            fontStyle: message.trim() == '(Message deleted)' ? FontStyle.italic : null,
+                          ),
                         ),
                       ),
                   ],
@@ -124,14 +134,19 @@ class ChatMessageWidget extends StatelessWidget {
   }
 
   Widget _buildAttachments(BuildContext context, List<dynamic> attachments, bool fromUser) {
+    // Detect images: check 'type' field first, then fall back to file extension
     final images = attachments.where((a) {
-      final name = a['name'] as String? ?? '';
-      return ['.jpg', '.jpeg', '.png', '.gif'].any((ext) => name.toLowerCase().endsWith(ext));
+      final type = (a['type'] as String? ?? '').toLowerCase();
+      if (type == 'image') return true;
+      final name = (a['name'] as String? ?? '').toLowerCase();
+      return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].any((ext) => name.endsWith(ext));
     }).toList();
 
     final files = attachments.where((a) {
-      final name = a['name'] as String? ?? '';
-      return !['.jpg', '.jpeg', '.png', '.gif'].any((ext) => name.toLowerCase().endsWith(ext));
+      final type = (a['type'] as String? ?? '').toLowerCase();
+      if (type == 'image') return false;
+      final name = (a['name'] as String? ?? '').toLowerCase();
+      return !['.jpg', '.jpeg', '.png', '.gif', '.webp'].any((ext) => name.endsWith(ext));
     }).toList();
 
     return Column(
@@ -160,7 +175,9 @@ class ChatMessageWidget extends StatelessWidget {
   Widget _buildImageThumbnail(BuildContext context, dynamic attachment, {bool isLarge = false}) {
     final path = attachment['path'] as String? ?? '';
     final isLocal = attachment['isLocal'] == true;
-    
+    final double w = isLarge ? double.infinity : 100;
+    final double h = isLarge ? 220 : 100;
+
     if (isLocal) {
       return GestureDetector(
         onTap: () => _showFullScreenImage(context, attachment),
@@ -169,13 +186,44 @@ class ChatMessageWidget extends StatelessWidget {
           child: Image.file(
             File(path),
             fit: BoxFit.cover,
-            width: isLarge ? double.infinity : 100,
-            height: isLarge ? 200 : 100,
+            width: w,
+            height: h,
           ),
         ),
       );
     }
 
+    // Remote image: if the path is a full https URL (from getPublicUrl), use it directly.
+    // Otherwise create a signed URL (for private buckets).
+    if (path.startsWith('http')) {
+      return GestureDetector(
+        onTap: () => _showFullScreenImage(context, attachment, signedUrl: path),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.network(
+            path,
+            fit: BoxFit.cover,
+            width: w,
+            height: h,
+            loadingBuilder: (ctx, child, prog) {
+              if (prog == null) return child;
+              return Container(
+                width: w, height: h,
+                decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(12)),
+                child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              );
+            },
+            errorBuilder: (ctx, err, _) => Container(
+              width: w, height: h,
+              color: Colors.grey[300],
+              child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Private bucket — use signed URL
     return FutureBuilder<String>(
       future: SupabaseConfig.client.storage
           .from('request-attachments')
@@ -183,8 +231,8 @@ class ChatMessageWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container(
-            width: isLarge ? double.infinity : 100,
-            height: isLarge ? 200 : 100,
+            width: w,
+            height: h,
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(12),
@@ -200,13 +248,13 @@ class ChatMessageWidget extends StatelessWidget {
             child: Image.network(
               snapshot.data!,
               fit: BoxFit.cover,
-              width: isLarge ? double.infinity : 100,
-              height: isLarge ? 200 : 100,
+              width: w,
+              height: h,
               errorBuilder: (context, error, stackTrace) => Container(
-                width: isLarge ? double.infinity : 100,
-                height: isLarge ? 200 : 100,
+                width: w,
+                height: h,
                 color: Colors.grey[300],
-                child: const Icon(Icons.error),
+                child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
               ),
             ),
           ),
@@ -247,12 +295,16 @@ class ChatMessageWidget extends StatelessWidget {
   void _showFullScreenImage(BuildContext context, dynamic attachment, {String? signedUrl}) async {
     final path = attachment['path'] as String? ?? '';
     final isLocal = attachment['isLocal'] == true;
-    
+
     String? imageUrl = signedUrl;
     if (!isLocal && imageUrl == null) {
-       imageUrl = await SupabaseConfig.client.storage
-          .from('request-attachments')
-          .createSignedUrl(path, 3600);
+      if (path.startsWith('http')) {
+        imageUrl = path; // Already a public URL
+      } else {
+        imageUrl = await SupabaseConfig.client.storage
+            .from('request-attachments')
+            .createSignedUrl(path, 3600);
+      }
     }
 
     Get.dialog(

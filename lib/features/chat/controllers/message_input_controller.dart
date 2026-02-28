@@ -51,7 +51,7 @@ class MessageInputController extends GetxController {
 
   void sendTextMessage() {
     final text = textController.text.trim();
-    if (text.isNotEmpty) {
+    if (text.isNotEmpty || chatController.selectedAttachments.isNotEmpty) {
       chatController.sendMessage(text);
       textController.clear();
       focusNode.requestFocus(); // Keep keyboard open

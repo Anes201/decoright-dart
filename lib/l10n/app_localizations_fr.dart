@@ -247,4 +247,211 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get done => 'Terminé';
+
+  @override
+  String get servicesWeOffer => 'Nos Services';
+
+  @override
+  String get featuredProjects => 'Projets Vedettes';
+
+  @override
+  String get activeProjects => 'Projets Actifs';
+
+  @override
+  String get viewAll => 'Voir Tout';
+
+  @override
+  String get requestAService => 'Demander un Service';
+
+  @override
+  String get noFeaturedProjects => 'Aucun projet vedette pour le moment.';
+
+  @override
+  String get noServicesFound => 'Aucun service trouvé.';
+
+  @override
+  String get gallery => 'Galerie';
+
+  @override
+  String get chat_tab => 'Chat';
+
+  @override
+  String get requestNow => 'Demander Maintenant';
+
+  @override
+  String get projectBasics => 'Bases du Projet';
+
+  @override
+  String get serviceType => 'Type de Service';
+
+  @override
+  String get spaceType => 'Type d\'Espace';
+
+  @override
+  String get selectServiceType => 'Sélectionner le Type de Service';
+
+  @override
+  String get selectSpaceType => 'Sélectionner le Type d\'Espace';
+
+  @override
+  String get locationAndDimensions => 'Localisation & Dimensions';
+
+  @override
+  String get location => 'Localisation';
+
+  @override
+  String get enterLocation => 'Entrez la localisation du projet...';
+
+  @override
+  String get width => 'Largeur (m)';
+
+  @override
+  String get height => 'Hauteur (m)';
+
+  @override
+  String get requestDetails => 'Détails de la Demande';
+
+  @override
+  String get descriptionRequirements => 'Description / Exigences Spéciales';
+
+  @override
+  String get describeRequirements => 'Décrivez vos exigences...';
+
+  @override
+  String get requestedDuration => 'Durée Demandée (Jours)';
+
+  @override
+  String get optionalDays => 'Facultatif : jours estimés';
+
+  @override
+  String get attachments => 'Pièces Jointes';
+
+  @override
+  String get noFilesAttached => 'Aucun fichier joint';
+
+  @override
+  String get submitRequest => 'Soumettre la Demande de Service';
+
+  @override
+  String get myServiceRequests => 'Mes Demandes de Service';
+
+  @override
+  String get noRequestsYet => 'Aucune demande pour le moment';
+
+  @override
+  String get createFirstRequest => 'Créez votre première demande de service !';
+
+  @override
+  String get openChat => 'Ouvrir le Chat';
+
+  @override
+  String get confirmCancelTitle => 'Annuler la Demande';
+
+  @override
+  String get confirmCancelMessage => 'Êtes-vous sûr de vouloir annuler cette demande ?';
+
+  @override
+  String get interiorGallery => 'Galerie d\'Intérieur';
+
+  @override
+  String get noGalleryItems => 'Aucun élément de galerie pour le moment';
+
+  @override
+  String get uploadPortfolioItem => 'Télécharger un élément de portfolio';
+
+  @override
+  String get title => 'Titre';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get required => 'Obligatoire';
+
+  @override
+  String get tapToSelectMedia => 'Appuyez pour sélectionner une image ou une vidéo';
+
+  @override
+  String get uploadItem => 'Télécharger l\'élément';
+
+  @override
+  String get itemUploadedSuccess => 'Élément téléchargé avec succès';
+
+  @override
+  String get uploadFailed => 'Échec du téléchargement';
+
+  @override
+  String get pleaseSelectFile => 'Veuillez sélectionner un fichier';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get noConversationsFound => 'Aucune conversation trouvée';
+
+  @override
+  String get createRequestToStartChat => 'Créez une demande de service pour commencer un chat.';
+
+  @override
+  String get online => 'En ligne';
+
+  @override
+  String get sendMessage => 'Envoyer un message...';
+
+  @override
+  String get cancelRecording => 'Annuler';
+
+  @override
+  String get error => 'Erreur';
+
+  @override
+  String get noPicturesForProject => 'Aucune image pour ce projet';
+
+  @override
+  String get supportAndContact => 'Support & Contact';
+
+  @override
+  String get howCanWeHelp => 'Comment pouvons-nous vous aider aujourd\'hui?';
+
+  @override
+  String get followUs => 'Suivez-nous';
+
+  @override
+  String get logoutConfirmation => 'Êtes-vous sûr de vouloir vous déconnecter ?';
+
+  @override
+  String get dontHaveAccount => 'Vous n\'avez pas de compte ?';
+
+  @override
+  String get phoneNumberHint => '+213 5XX XX XX XX';
+
+  @override
+  String get continueAsGuest => 'Continuer en tant qu\'invité';
+
+  @override
+  String get loginToViewHome => 'Connectez-vous pour voir l\'accueil';
+
+  @override
+  String get loginToViewHomeSubtitle => 'Vous devez être connecté pour accéder au tableau de bord personnalisé.';
+
+  @override
+  String get loginToOrder => 'Connectez-vous pour commander';
+
+  @override
+  String get loginToOrderSubtitle => 'Vous devez être connecté pour soumettre des demandes de service.';
+
+  @override
+  String get loginToChat => 'Connectez-vous pour discuter';
+
+  @override
+  String get loginToChatSubtitle => 'Vous devez être connecté pour discuter avec nos designers.';
+
+  @override
+  String get loginToSettings => 'Connectez-vous pour les paramètres';
+
+  @override
+  String get loginToSettingsSubtitle => 'Vous devez être connecté pour voir et modifier les paramètres.';
+
+  @override
+  String get loginWithOtp => 'Se connecter par OTP';
 }

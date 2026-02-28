@@ -50,7 +50,6 @@ class SettingsScreen extends StatelessWidget {
                   SettingsTile(
                     icon: Iconsax.user,
                     title: l10n.personalInformation,
-                    subtitle: l10n.completeYourProfile,
                     onTap: () => Get.to(() => ProfileScreen()),
                   ),
                   SettingsTile(
@@ -60,14 +59,12 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   SettingsTile(
                     icon: Iconsax.support,
-                    title: 'Support',
-                    subtitle: 'Contact us on WhatsApp or Social Media',
+                    title: l10n.support,
                     onTap: () => _showSupportBottomSheet(context),
                   ),
                   SettingsTile(
                     icon: Iconsax.message_question,
                     title: 'FAQ',
-                    subtitle: 'Frequently Asked Questions',
                     onTap: () => Get.to(() => const FAQScreen()),
                   ),
                 ],
@@ -100,12 +97,12 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   SettingsTile(
                     icon: Iconsax.shield_security,
-                    title: 'Privacy Policy',
+                    title: l10n.privacyPolicy,
                     onTap: () => Get.to(() => const PrivacyPolicyScreen()),
                   ),
                   SettingsTile(
                     icon: Iconsax.document,
-                    title: 'Terms of Service',
+                    title: l10n.termsAndConditions,
                     onTap: () => Get.to(() => const TermsOfServiceScreen()),
                   ),
                   SettingsTile(
@@ -161,20 +158,21 @@ class SettingsScreen extends StatelessWidget {
 
   Future<void> _handleLogout(BuildContext context) async {
     final authService = AuthService();
+    final l10n = AppLocalizations.of(context)!;
     
     // Show confirmation dialog
     final shouldLogout = await Get.dialog<bool>(
       AlertDialog(
-        title: Text(AppLocalizations.of(context)!.logout),
-        content: const Text('Are you sure you want to log out?'),
+        title: Text(l10n.logout),
+        content: Text(l10n.logoutConfirmation),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: const Text('Logout'),
+            child: Text(l10n.logout),
           ),
         ],
       ),
@@ -210,6 +208,7 @@ class SettingsScreen extends StatelessWidget {
   void _showSupportBottomSheet(BuildContext context) {
     final supportController = Get.put(SupportController());
     final isDark = THelperFunctions.isDarkMode(context);
+    final l10n = AppLocalizations.of(context)!;
 
     Get.bottomSheet(
       Container(
@@ -240,12 +239,12 @@ class SettingsScreen extends StatelessWidget {
 
               /// -- Title
               Text(
-                'Support & Contact',
+                l10n.supportAndContact,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: TSizes.sm),
               Text(
-                'How can we help you today?',
+                l10n.howCanWeHelp,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ),
               const SizedBox(height: TSizes.spaceBtwSections),
@@ -324,7 +323,7 @@ class SettingsScreen extends StatelessWidget {
                       const Divider(),
                       const SizedBox(height: TSizes.spaceBtwItems),
                       Text(
-                        'Follow Us',
+                        l10n.followUs,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey),
                       ),
                       const SizedBox(height: TSizes.spaceBtwItems),

@@ -1,7 +1,6 @@
-import 'package:decoright/utils/logging/logger.dart'; // Ensure we use project logger
+import 'package:decoright/utils/logging/logger.dart';
 import 'package:decoright/data/services/auth_service.dart';
 import 'package:decoright/features/authentication/screens/signup/verify_email_screen.dart';
-import 'package:decoright/features/authentication/screens/entry/profile_completion_screen.dart';
 import 'package:decoright/features/authentication/screens/login/login_screen.dart';
 import 'package:decoright/features/authentication/screens/onboarding/onboarding_screen.dart';
 import 'package:decoright/features/authentication/screens/password_configuration/new_password_screen.dart';
@@ -19,62 +18,6 @@ class AuthController extends GetxController {
   // Form Keys
   final emailEntryFormKey = GlobalKey<FormState>();
 
-  @override
-  void onReady() {
-    super.onReady();
-    
-    // Listen for auth state changes globally (helpful for Password Recovery/Deep links)
-    _authService.authStateChanges.listen((AuthState state) {
-      TLoggerHelper.debug("Auth state change: ${state.event}");
-      if (state.event == AuthChangeEvent.passwordRecovery) {
-        TLoggerHelper.info("Password recovery triggered, navigating to NewPasswordScreen");
-        Get.to(() => const NewPasswordScreen());
-      }
-    });
-
-    screenRedirect();
-  }
-
-  /// Initial Screen Redirect
-  void screenRedirect() async {
-    final user = _authService.getCurrentUser();
-    final bool wasGuest = TLocalStorage.instance.readData('isGuest') ?? false;
-    
-    TLoggerHelper.debug("--- screenRedirect called ---");
-    TLoggerHelper.debug("User: ${user?.email ?? 'NULL'}");
-    TLoggerHelper.debug("Was Guest: $wasGuest");
-
-    if (user != null) {
-      TLoggerHelper.debug("User found, checking profile...");
-      isGuest.value = false;
-      await checkProfileAndNavigate();
-    } else if (wasGuest) {
-      TLoggerHelper.debug("Guest status persisted, redirecting to NavigationMenu");
-      isGuest.value = true;
-      Get.offAll(() => const NavigationMenu());
-    } else {
-      TLoggerHelper.debug("No user found and not guest, checking onboarding status...");
-      
-      // Load remembered email if exists
-      final rememberedEmail = TLocalStorage.instance.readData('rememberedEmail');
-      if (rememberedEmail != null && (rememberedEmail as String).isNotEmpty) {
-        emailController.text = rememberedEmail;
-        rememberMe.value = true;
-      }
-
-      final isFirstTime = TLocalStorage.instance.readData('isFirstTime');
-      TLoggerHelper.debug("isFirstTime: $isFirstTime");
-      
-      if (isFirstTime == null || isFirstTime == true) {
-        TLoggerHelper.debug("Redirecting to OnBoardingScreen");
-        Get.offAll(() => const OnBoardingScreen());
-      } else {
-        TLoggerHelper.debug("Redirecting to WelcomeScreen");
-        Get.offAll(() => const LoginScreen());
-      }
-    }
-  }
-
   // Observable states
   final isLoading = false.obs;
   final hidePassword = true.obs;
@@ -88,9 +31,72 @@ class AuthController extends GetxController {
   final lastNameController = TextEditingController();
   final phoneNumberController = TextEditingController(text: '+213 ');
   final otpController = TextEditingController();
-  
+
   // Track OTP type (signup or magiclink)
   OtpType currentOtpType = OtpType.signup;
+
+  @override
+  void onReady() {
+    super.onReady();
+
+    // Listen for auth state changes globally (helpful for Password Recovery/Deep links)
+    _authService.authStateChanges.listen((AuthState state) {
+      TLoggerHelper.debug("Auth state change: ${state.event}");
+      if (state.event == AuthChangeEvent.passwordRecovery) {
+        TLoggerHelper.info("Password recovery triggered, navigating to NewPasswordScreen");
+        Get.to(() => const NewPasswordScreen());
+      }
+      // Handle Google OAuth sign-in callback
+      if (state.event == AuthChangeEvent.signedIn && state.session != null) {
+        TLoggerHelper.debug('Auth state signedIn event received');
+        isLoading.value = false;
+        isGuest.value = false;
+        Get.offAll(() => const NavigationMenu());
+      }
+    });
+
+    screenRedirect();
+  }
+
+  /// Initial Screen Redirect
+  void screenRedirect() async {
+    final user = _authService.getCurrentUser();
+    final bool wasGuest = TLocalStorage.instance.readData('isGuest') ?? false;
+
+    TLoggerHelper.debug("--- screenRedirect called ---");
+    TLoggerHelper.debug("User: ${user?.email ?? 'NULL'}");
+    TLoggerHelper.debug("Was Guest: $wasGuest");
+
+    if (user != null) {
+      TLoggerHelper.debug("User found, redirecting to NavigationMenu...");
+      isGuest.value = false;
+      Get.offAll(() => const NavigationMenu());
+    } else if (wasGuest) {
+      TLoggerHelper.debug("Guest status persisted, redirecting to NavigationMenu");
+      isGuest.value = true;
+      Get.offAll(() => const NavigationMenu());
+    } else {
+      TLoggerHelper.debug("No user found and not guest, checking onboarding status...");
+
+      // Load remembered email if exists
+      final rememberedEmail = TLocalStorage.instance.readData('rememberedEmail');
+      if (rememberedEmail != null && (rememberedEmail as String).isNotEmpty) {
+        emailController.text = rememberedEmail;
+        rememberMe.value = true;
+      }
+
+      final isFirstTime = TLocalStorage.instance.readData('isFirstTime');
+      TLoggerHelper.debug("isFirstTime: $isFirstTime");
+
+      if (isFirstTime == null || isFirstTime == true) {
+        TLoggerHelper.debug("Redirecting to OnBoardingScreen");
+        Get.offAll(() => const OnBoardingScreen());
+      } else {
+        TLoggerHelper.debug("Redirecting to LoginScreen");
+        Get.offAll(() => const LoginScreen());
+      }
+    }
+  }
 
   /// Login as Guest
   void loginAsGuest() {
@@ -101,7 +107,6 @@ class AuthController extends GetxController {
 
   /// Sign In
   Future<void> signIn() async {
-    // Legacy password sign in - keep for now but we will use OTP mostly
     try {
       isLoading.value = true;
       final email = emailController.text.trim();
@@ -122,12 +127,12 @@ class AuthController extends GetxController {
 
       if (response.user != null) {
         isGuest.value = false;
-        
+
         // Handle Remember Me
         if (rememberMe.value) {
           TLocalStorage.instance.saveData('rememberedEmail', email);
         } else {
-           TLocalStorage.instance.removeData('rememberedEmail');
+          TLocalStorage.instance.removeData('rememberedEmail');
         }
 
         Get.snackbar(
@@ -137,7 +142,7 @@ class AuthController extends GetxController {
           backgroundColor: Colors.green.withOpacity(0.1),
           colorText: Colors.green,
         );
-        
+
         Get.offAll(() => const NavigationMenu());
       }
     } catch (e) {
@@ -172,7 +177,7 @@ class AuthController extends GetxController {
 
       await _authService.signInWithOtp(email: email);
       currentOtpType = OtpType.signup;
-      
+
       // Handle Remember Me for OTP
       if (rememberMe.value) {
         TLocalStorage.instance.saveData('rememberedEmail', email);
@@ -198,10 +203,9 @@ class AuthController extends GetxController {
   Future<void> signInWithGoogle() async {
     try {
       isLoading.value = true;
-      
-      // Sign in with Google OAuth - this opens browser/webview
+
       final result = await _authService.signInWithGoogle();
-      
+
       if (!result) {
         Get.snackbar(
           'Error',
@@ -212,17 +216,8 @@ class AuthController extends GetxController {
         );
         return;
       }
-      
-      // Listen for auth state change (OAuth callback)
-      // The auth state will change when OAuth completes
-      _authService.authStateChanges.listen((AuthState state) async {
-        if (state.event == AuthChangeEvent.signedIn && state.session != null) {
-          TLoggerHelper.debug('Google OAuth successful, checking profile...');
-          isLoading.value = false;
-          await checkProfileAndNavigate();
-        }
-      });
-      
+
+      // Auth state listener in onReady() handles the OAuth callback and navigation
     } catch (e) {
       isLoading.value = false;
       Get.snackbar(
@@ -270,13 +265,11 @@ class AuthController extends GetxController {
       if (response.user != null) {
         isGuest.value = false;
         currentOtpType = OtpType.signup;
-        // Instead of snackbar and navigation to menu, go to verification screen
         Get.to(() => VerifyEmailScreen(email: email));
       }
     } catch (e) {
       String errorMessage = e.toString().replaceAll('Exception: ', '').replaceAll('AuthException:', '');
-      
-      // Handle duplicate phone number error from Supabase/PostgreSQL
+
       if (errorMessage.contains('23505') || errorMessage.toLowerCase().contains('duplicate') || errorMessage.toLowerCase().contains('unique constraint')) {
         errorMessage = 'This phone number is already registered. Please use a different one or log in.';
       }
@@ -302,8 +295,8 @@ class AuthController extends GetxController {
 
       if (token.isEmpty || token.length != 6) {
         Get.snackbar(
-          'Error', 
-          'Please enter a valid 6-digit code', 
+          'Error',
+          'Please enter a valid 6-digit code',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.withOpacity(0.1),
           colorText: Colors.red,
@@ -312,111 +305,27 @@ class AuthController extends GetxController {
       }
 
       try {
-        // Try the current expected type first
         await _authService.verifyOTP(email: email, token: token, type: currentOtpType);
       } catch (e) {
-        // If it fails, and we used signup, try magiclink (for existing users)
         if (currentOtpType == OtpType.signup) {
-           TLoggerHelper.debug("Verification with signup failed, retrying with magiclink...");
-           await _authService.verifyOTP(email: email, token: token, type: OtpType.magiclink);
-        } 
-        // If we used magiclink/email, try signup (in case it was actually a new signup)
-        else if (currentOtpType == OtpType.magiclink || currentOtpType == OtpType.email) {
-           TLoggerHelper.debug("Verification with magiclink failed, retrying with signup...");
-           await _authService.verifyOTP(email: email, token: token, type: OtpType.signup);
+          TLoggerHelper.debug("Verification with signup failed, retrying with magiclink...");
+          await _authService.verifyOTP(email: email, token: token, type: OtpType.magiclink);
+        } else if (currentOtpType == OtpType.magiclink || currentOtpType == OtpType.email) {
+          TLoggerHelper.debug("Verification with magiclink failed, retrying with signup...");
+          await _authService.verifyOTP(email: email, token: token, type: OtpType.signup);
         } else {
           rethrow;
         }
       }
 
-      // Successfully verified. Now check if profile is complete.
-      await checkProfileAndNavigate();
-      
-    } catch (e) {
-      // Flow 2: Do NOT show technical errors
-      Get.snackbar(
-        'Verification Failed', 
-        'The code you entered is invalid or has expired. Please try again.', 
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /// Check if user has completed profile and navigate accordingly
-  Future<void> checkProfileAndNavigate() async {
-    final user = _authService.getCurrentUser();
-    if (user == null) {
-      Get.offAllNamed('/login'); // Or back to entry
-      return;
-    }
-
-    final profile = await _authService.getUserProfile(user.id);
-    
-    // Check if mandatory fields are present
-    final bool hasFullName = profile != null && profile['full_name'] != null && (profile['full_name'] as String).isNotEmpty;
-    final bool hasPhone = profile != null && profile['phone'] != null && (profile['phone'] as String).isNotEmpty;
-
-    if (!hasFullName || !hasPhone) {
-      Get.offAll(() => const ProfileCompletionScreen());
-    } else {
+      // Successfully verified — go straight to home
       isGuest.value = false;
       Get.offAll(() => const NavigationMenu());
-    }
-  }
 
-  /// Mandatory Profile Completion
-  Future<void> completeProfile() async {
-    try {
-      isLoading.value = true;
-      final firstName = firstNameController.text.trim();
-      final lastName = lastNameController.text.trim();
-      final phoneNumber = phoneNumberController.text.trim();
-
-      final phoneDigits = phoneNumber.replaceAll(RegExp(r'\D'), '').replaceFirst('213', '');
-      if (firstName.isEmpty || lastName.isEmpty || phoneNumber.isEmpty || phoneDigits.length != 9) {
-        Get.snackbar(
-          'Error',
-          phoneDigits.length != 9 ? 'Please enter a valid Algerian phone number (9 digits).' : 'Please fill in all fields to continue.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red,
-        );
-        return;
-      }
-
-      await _authService.updateProfile(
-        firstName: firstName,
-        lastName: lastName,
-        phone: phoneNumber,
-      );
-
-      Get.snackbar(
-        'Success',
-        'Profile completed! Welcome to DecoRight.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1),
-        colorText: Colors.green,
-      );
-      
-      isGuest.value = false;
-      Get.offAll(() => const NavigationMenu());
     } catch (e) {
-      String errorMessage = e.toString().replaceAll('Exception: ', '').replaceAll('PostgrestException:', '');
-      
-      if (errorMessage.contains('23505') || errorMessage.toLowerCase().contains('duplicate') || errorMessage.toLowerCase().contains('unique constraint')) {
-        errorMessage = 'This phone number is already in use. Please use a different one.';
-      } else {
-        // Log the error for debugging and show a more descriptive message if possible
-        errorMessage = 'Failed to complete profile: $errorMessage';
-      }
-
       Get.snackbar(
-        'Error',
-        errorMessage,
+        'Verification Failed',
+        'The code you entered is invalid or has expired. Please try again.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.1),
         colorText: Colors.red,
@@ -431,16 +340,16 @@ class AuthController extends GetxController {
     try {
       await _authService.resendEmailOTP(email: email, type: currentOtpType);
       Get.snackbar(
-        'Success', 
-        'Confirmation code resent to your email.', 
+        'Success',
+        'Confirmation code resent to your email.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green.withOpacity(0.1),
         colorText: Colors.green,
       );
     } catch (e) {
       Get.snackbar(
-        'Error', 
-        'Failed to resend code: $e', 
+        'Error',
+        'Failed to resend code: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.1),
         colorText: Colors.red,
@@ -454,7 +363,8 @@ class AuthController extends GetxController {
       await _authService.signOut();
       isGuest.value = false;
       TLocalStorage.instance.saveData('isGuest', false);
-      
+      TLocalStorage.instance.removeData('rememberedEmail');
+
       Get.snackbar(
         'Success',
         'Logged out successfully',
@@ -463,7 +373,6 @@ class AuthController extends GetxController {
         colorText: Colors.green,
       );
 
-      // Navigate back to Welcome/Entry
       Get.offAll(() => const LoginScreen());
     } catch (e) {
       Get.snackbar(

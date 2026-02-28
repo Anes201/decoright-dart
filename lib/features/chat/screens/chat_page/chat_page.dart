@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:decoright/utils/helpers/helper_functions.dart';
 import 'package:decoright/utils/constants/colors.dart';
+import 'package:decoright/l10n/app_localizations.dart';
 import '../../controllers/chat_controller.dart';
 import 'widgets/chat_message_widget.dart';
 import 'widgets/message_input_widget.dart';
@@ -13,8 +14,9 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final i18n = AppLocalizations.of(context)!;
     // Use Get.arguments to pass user name or ID from previous screen
-    final String userName = Get.arguments?['userName'] ?? 'Chat';
+    final String userName = Get.arguments?['userName'] ?? i18n.chat;
 
     // Ensure controller is put only once (better to put it earlier, e.g., in binding)
     final ChatController controller = Get.put(ChatController());
@@ -50,7 +52,7 @@ class ChatScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(userName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            Text('En ligne', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.green)),
+            Text(i18n.online, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.green)),
           ],
         ),
         actions: const [],

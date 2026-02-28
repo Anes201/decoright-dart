@@ -29,7 +29,17 @@ class MessageController extends GetxController {
 
   // Observable list of conversations (for the MessagesPage list)
   var privateMessages = <ConversationItem>[].obs;
+  var searchQuery = ''.obs; // For searching conversations by name
   var isLoading = false.obs;
+
+  // Getter for filtered messages based on search query
+  List<ConversationItem> get filteredMessages {
+    if (searchQuery.value.trim().isEmpty) {
+      return privateMessages;
+    }
+    return privateMessages.where((msg) =>
+        msg.userName.toLowerCase().contains(searchQuery.value.toLowerCase())).toList();
+  }
 
   @override
   void onInit() {
@@ -59,11 +69,17 @@ class MessageController extends GetxController {
             .limit(1)
             .maybeSingle();
 
+        final locale = Get.locale?.languageCode ?? 'en';
+        final serviceTypeData = req['service_types'];
+        final userName = (serviceTypeData is Map 
+            ? (serviceTypeData['display_name_$locale'] ?? serviceTypeData['display_name_en'] ?? serviceTypeData['name'])
+            : (req['service_type'] ?? 'Service Request'))
+            .toString()
+            .replaceAll('_', ' ');
+
         items.add(ConversationItem(
           requestId: requestId,
-          userName: (req['service_types']?['name'] ?? req['service_type'] ?? 'Service Request')
-              .toString()
-              .replaceAll('_', ' '),
+          userName: userName,
           lastMessage: lastMsgResponse?['content'] ?? req['description'] ?? 'No messages yet',
           timestamp: DateTime.parse(lastMsgResponse?['created_at'] ?? req['updated_at'] ?? req['created_at']),
           unreadCount: 0, 

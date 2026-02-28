@@ -220,7 +220,7 @@ abstract class AppLocalizations {
   /// No description provided for @login.
   ///
   /// In en, this message translates to:
-  /// **'Log In'**
+  /// **'Login'**
   String get login;
 
   /// No description provided for @signup.
@@ -418,7 +418,7 @@ abstract class AppLocalizations {
   /// No description provided for @rememberMe.
   ///
   /// In en, this message translates to:
-  /// **'Remember me'**
+  /// **'Remember Me'**
   String get rememberMe;
 
   /// No description provided for @forgetPassword.
@@ -430,7 +430,7 @@ abstract class AppLocalizations {
   /// No description provided for @signIn.
   ///
   /// In en, this message translates to:
-  /// **'Sign in'**
+  /// **'Sign In'**
   String get signIn;
 
   /// No description provided for @signUp.
@@ -454,13 +454,13 @@ abstract class AppLocalizations {
   /// No description provided for @firstName.
   ///
   /// In en, this message translates to:
-  /// **'First name'**
+  /// **'First Name'**
   String get firstName;
 
   /// No description provided for @lastName.
   ///
   /// In en, this message translates to:
-  /// **'Last name'**
+  /// **'Last Name'**
   String get lastName;
 
   /// No description provided for @userName.
@@ -576,6 +576,420 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get done;
+
+  /// No description provided for @servicesWeOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Services We Offer'**
+  String get servicesWeOffer;
+
+  /// No description provided for @featuredProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Projects'**
+  String get featuredProjects;
+
+  /// No description provided for @activeProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Projects'**
+  String get activeProjects;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @requestAService.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a Service'**
+  String get requestAService;
+
+  /// No description provided for @noFeaturedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured projects yet.'**
+  String get noFeaturedProjects;
+
+  /// No description provided for @noServicesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No services found.'**
+  String get noServicesFound;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @chat_tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat_tab;
+
+  /// No description provided for @requestNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Now'**
+  String get requestNow;
+
+  /// No description provided for @projectBasics.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Basics'**
+  String get projectBasics;
+
+  /// No description provided for @serviceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Type'**
+  String get serviceType;
+
+  /// No description provided for @spaceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Space Type'**
+  String get spaceType;
+
+  /// No description provided for @selectServiceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Service Type'**
+  String get selectServiceType;
+
+  /// No description provided for @selectSpaceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Space Type'**
+  String get selectSpaceType;
+
+  /// No description provided for @locationAndDimensions.
+  ///
+  /// In en, this message translates to:
+  /// **'Location & Dimensions'**
+  String get locationAndDimensions;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @enterLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter project location...'**
+  String get enterLocation;
+
+  /// No description provided for @width.
+  ///
+  /// In en, this message translates to:
+  /// **'Width (m)'**
+  String get width;
+
+  /// No description provided for @height.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (m)'**
+  String get height;
+
+  /// No description provided for @requestDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Details'**
+  String get requestDetails;
+
+  /// No description provided for @descriptionRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Description / Special Requirements'**
+  String get descriptionRequirements;
+
+  /// No description provided for @describeRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your requirements...'**
+  String get describeRequirements;
+
+  /// No description provided for @requestedDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested Duration (Days)'**
+  String get requestedDuration;
+
+  /// No description provided for @optionalDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional: estimated days'**
+  String get optionalDays;
+
+  /// No description provided for @attachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get attachments;
+
+  /// No description provided for @noFilesAttached.
+  ///
+  /// In en, this message translates to:
+  /// **'No files attached'**
+  String get noFilesAttached;
+
+  /// No description provided for @submitRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Service Request'**
+  String get submitRequest;
+
+  /// No description provided for @myServiceRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'My Service Requests'**
+  String get myServiceRequests;
+
+  /// No description provided for @noRequestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests yet'**
+  String get noRequestsYet;
+
+  /// No description provided for @createFirstRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first service request!'**
+  String get createFirstRequest;
+
+  /// No description provided for @openChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Chat'**
+  String get openChat;
+
+  /// No description provided for @confirmCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Request'**
+  String get confirmCancelTitle;
+
+  /// No description provided for @confirmCancelMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this request?'**
+  String get confirmCancelMessage;
+
+  /// No description provided for @interiorGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Interior Gallery'**
+  String get interiorGallery;
+
+  /// No description provided for @noGalleryItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No gallery items yet'**
+  String get noGalleryItems;
+
+  /// No description provided for @uploadPortfolioItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Portfolio Item'**
+  String get uploadPortfolioItem;
+
+  /// No description provided for @title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get title;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get required;
+
+  /// No description provided for @tapToSelectMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to select Image or Video'**
+  String get tapToSelectMedia;
+
+  /// No description provided for @uploadItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Item'**
+  String get uploadItem;
+
+  /// No description provided for @itemUploadedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Item uploaded successfully'**
+  String get itemUploadedSuccess;
+
+  /// No description provided for @uploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload failed'**
+  String get uploadFailed;
+
+  /// No description provided for @pleaseSelectFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a file'**
+  String get pleaseSelectFile;
+
+  /// No description provided for @messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// No description provided for @noConversationsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations found'**
+  String get noConversationsFound;
+
+  /// No description provided for @createRequestToStartChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a service request to start a chat.'**
+  String get createRequestToStartChat;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// No description provided for @sendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message...'**
+  String get sendMessage;
+
+  /// No description provided for @cancelRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelRecording;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @noPicturesForProject.
+  ///
+  /// In en, this message translates to:
+  /// **'No pictures for this project'**
+  String get noPicturesForProject;
+
+  /// No description provided for @supportAndContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Support & Contact'**
+  String get supportAndContact;
+
+  /// No description provided for @howCanWeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'How can we help you today?'**
+  String get howCanWeHelp;
+
+  /// No description provided for @followUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Us'**
+  String get followUs;
+
+  /// No description provided for @logoutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutConfirmation;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get dontHaveAccount;
+
+  /// No description provided for @phoneNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+213 5XX XX XX XX'**
+  String get phoneNumberHint;
+
+  /// No description provided for @continueAsGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as Guest'**
+  String get continueAsGuest;
+
+  /// No description provided for @loginToViewHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to View Home'**
+  String get loginToViewHome;
+
+  /// No description provided for @loginToViewHomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be logged in to access the personalized dashboard.'**
+  String get loginToViewHomeSubtitle;
+
+  /// No description provided for @loginToOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to Order'**
+  String get loginToOrder;
+
+  /// No description provided for @loginToOrderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be logged in to submit service requests.'**
+  String get loginToOrderSubtitle;
+
+  /// No description provided for @loginToChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to Chat'**
+  String get loginToChat;
+
+  /// No description provided for @loginToChatSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be logged in to chat with our designers.'**
+  String get loginToChatSubtitle;
+
+  /// No description provided for @loginToSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to Settings'**
+  String get loginToSettings;
+
+  /// No description provided for @loginToSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be logged in to view and change settings.'**
+  String get loginToSettingsSubtitle;
+
+  /// No description provided for @loginWithOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Login with OTP'**
+  String get loginWithOtp;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

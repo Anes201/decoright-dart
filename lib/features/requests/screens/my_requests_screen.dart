@@ -9,6 +9,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:decoright/utils/helpers/helper_functions.dart';
 import 'package:decoright/utils/loaders/shimmer_loader.dart';
 import 'package:decoright/utils/constants/sizes.dart';
+import 'package:decoright/l10n/app_localizations.dart';
 
 class MyRequestsScreen extends StatelessWidget {
   const MyRequestsScreen({super.key});
@@ -16,10 +17,11 @@ class MyRequestsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(RequestController());
+    final i18n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Service Requests'),
+        title: Text(i18n.myServiceRequests),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -32,21 +34,30 @@ class MyRequestsScreen extends StatelessWidget {
         }
 
         if (controller.requests.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Iconsax.note, size: 64, color: Colors.grey[400]),
-                const SizedBox(height: 16),
-                Text(
-                  'No requests yet',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.grey[600],
+          return RefreshIndicator(
+            onRefresh: controller.loadRequests,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Iconsax.note, size: 64, color: Colors.grey[400]),
+                      const SizedBox(height: 16),
+                      Text(
+                        i18n.noRequestsYet,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(i18n.createFirstRequest),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text('Create your first service request!'),
-              ],
+              ),
             ),
           );
         }
@@ -54,6 +65,7 @@ class MyRequestsScreen extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: controller.loadRequests,
           child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16),
             itemCount: controller.requests.length,
             itemBuilder: (context, index) {
@@ -98,10 +110,12 @@ class _RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final i18n = AppLocalizations.of(context)!;
     final isDark = THelperFunctions.isDarkMode(context);
     final status = request['status'] ?? 'Unknown';
+    final locale = Get.locale?.languageCode ?? 'en';
     final serviceTypeData = request['service_types'];
-    final serviceType = ((serviceTypeData is Map ? serviceTypeData['name'] : request['service_type']) ?? 'Service')
+    final serviceType = ((serviceTypeData is Map ? (serviceTypeData['display_name_$locale'] ?? serviceTypeData['display_name_en'] ?? serviceTypeData['name']) : request['service_type']) ?? i18n.serviceType)
         .toString()
         .replaceAll('_', ' ');
     final description = request['description'] ?? '';
@@ -190,8 +204,8 @@ class _RequestCard extends StatelessWidget {
                       const Icon(Iconsax.message, size: 16, color: TColors.primary),
                       const SizedBox(width: 4),
                       Text(
-                        'Open Chat',
-                        style: TextStyle(
+                        i18n.openChat,
+                        style: const TextStyle(
                           color: TColors.primary,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -203,13 +217,13 @@ class _RequestCard extends StatelessWidget {
                     children: [
                       if (Get.find<ProfileController>().role == 'customer' && status == 'Submitted')
                         TextButton(
-                          onPressed: () => _confirmCancel(requestId),
+                          onPressed: () => _confirmCancel(context, i18n, requestId),
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: const Size(50, 30),
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                          child: const Text('Cancel', style: TextStyle(color: Colors.red, fontSize: 13)),
+                          child: Text(i18n.cancel, style: const TextStyle(color: Colors.red, fontSize: 13)),
                         ),
                       if (Get.find<ProfileController>().role == 'admin')
                         _buildAdminMenu(requestId)
@@ -241,10 +255,10 @@ class _RequestCard extends StatelessWidget {
     );
   }
 
-  void _confirmCancel(String requestId) {
+  void _confirmCancel(BuildContext context, AppLocalizations i18n, String requestId) {
     Get.defaultDialog(
-      title: 'Cancel Request',
-      middleText: 'Are you sure you want to cancel this request?',
+      title: i18n.confirmCancelTitle,
+      middleText: i18n.confirmCancelMessage,
       onConfirm: () {
         Get.back();
         Get.find<RequestController>().cancelRequest(requestId);
@@ -252,6 +266,8 @@ class _RequestCard extends StatelessWidget {
       onCancel: () => Get.back(),
       confirmTextColor: Colors.white,
       buttonColor: Colors.red,
+      textConfirm: i18n.ok,
+      textCancel: i18n.cancel,
     );
   }
 

@@ -186,10 +186,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get letsCreateYourAccount => 'لنقم بإنشاء حسابك';
 
   @override
-  String get firstName => 'الاسم';
+  String get firstName => 'الاسم الأول';
 
   @override
-  String get lastName => 'اللقب';
+  String get lastName => 'الاسم الأخير';
 
   @override
   String get userName => 'اسم المستخدم';
@@ -247,4 +247,211 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get done => 'تم';
+
+  @override
+  String get servicesWeOffer => 'الخدمات التي نقدمها';
+
+  @override
+  String get featuredProjects => 'الأعمال المختارة';
+
+  @override
+  String get activeProjects => 'المشاريع النشطة';
+
+  @override
+  String get viewAll => 'عرض الكل';
+
+  @override
+  String get requestAService => 'اطلب خدمة';
+
+  @override
+  String get noFeaturedProjects => 'لا توجد أعمال مختارة بعد.';
+
+  @override
+  String get noServicesFound => 'لم يتم العثور على خدمات.';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get chat_tab => 'الدردشة';
+
+  @override
+  String get requestNow => 'اطلب الآن';
+
+  @override
+  String get projectBasics => 'أساسيات المشروع';
+
+  @override
+  String get serviceType => 'نوع الخدمة';
+
+  @override
+  String get spaceType => 'نوع المساحة';
+
+  @override
+  String get selectServiceType => 'اختر نوع الخدمة';
+
+  @override
+  String get selectSpaceType => 'اختر نوع المساحة';
+
+  @override
+  String get locationAndDimensions => 'الموقع والأبعاد';
+
+  @override
+  String get location => 'الموقع';
+
+  @override
+  String get enterLocation => 'أدخل موقع المشروع...';
+
+  @override
+  String get width => 'العرض (م)';
+
+  @override
+  String get height => 'الارتفاع (م)';
+
+  @override
+  String get requestDetails => 'تفاصيل الطلب';
+
+  @override
+  String get descriptionRequirements => 'الوصف / المتطلبات الخاصة';
+
+  @override
+  String get describeRequirements => 'صف متطلباتك...';
+
+  @override
+  String get requestedDuration => 'المدة المطلوبة (أيام)';
+
+  @override
+  String get optionalDays => 'اختياري: الأيام المقدرة';
+
+  @override
+  String get attachments => 'المرفقات';
+
+  @override
+  String get noFilesAttached => 'لا توجد ملفات مرفقة';
+
+  @override
+  String get submitRequest => 'تقديم طلب خدمة';
+
+  @override
+  String get myServiceRequests => 'طلبات الخدمة الخاصة بي';
+
+  @override
+  String get noRequestsYet => 'لا توجد طلبات بعد';
+
+  @override
+  String get createFirstRequest => 'أنشئ أول طلب خدمة لك!';
+
+  @override
+  String get openChat => 'افتح الدردشة';
+
+  @override
+  String get confirmCancelTitle => 'إلغاء الطلب';
+
+  @override
+  String get confirmCancelMessage => 'هل أنت متأكد أنك تريد إلغاء هذا الطلب؟';
+
+  @override
+  String get interiorGallery => 'معرض التصميم الداخلي';
+
+  @override
+  String get noGalleryItems => 'لا يوجد عناصر في المعرض بعد';
+
+  @override
+  String get uploadPortfolioItem => 'رفع عنصر للمعرض';
+
+  @override
+  String get title => 'العنوان';
+
+  @override
+  String get description => 'الوصف';
+
+  @override
+  String get required => 'مطلوب';
+
+  @override
+  String get tapToSelectMedia => 'اضغط لاختيار صورة أو فيديو';
+
+  @override
+  String get uploadItem => 'رفع العنصر';
+
+  @override
+  String get itemUploadedSuccess => 'تم رفع العنصر بنجاح';
+
+  @override
+  String get uploadFailed => 'فشل الرفع';
+
+  @override
+  String get pleaseSelectFile => 'يرجى اختيار ملف';
+
+  @override
+  String get messages => 'الرسائل';
+
+  @override
+  String get noConversationsFound => 'لا يوجد محادثات';
+
+  @override
+  String get createRequestToStartChat => 'أنشئ طلب خدمة لبدء الدردشة.';
+
+  @override
+  String get online => 'متصل';
+
+  @override
+  String get sendMessage => 'أرسل رسالة...';
+
+  @override
+  String get cancelRecording => 'إلغاء';
+
+  @override
+  String get error => 'خطأ';
+
+  @override
+  String get noPicturesForProject => 'لا توجد صور لهذا المشروع';
+
+  @override
+  String get supportAndContact => 'الدعم والتواصل';
+
+  @override
+  String get howCanWeHelp => 'كيف يمكننا مساعدتك اليوم؟';
+
+  @override
+  String get followUs => 'تابعنا';
+
+  @override
+  String get logoutConfirmation => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
+
+  @override
+  String get dontHaveAccount => 'ليس لديك حساب؟';
+
+  @override
+  String get phoneNumberHint => '+213 5XX XX XX XX';
+
+  @override
+  String get continueAsGuest => 'المتابعة كضيف';
+
+  @override
+  String get loginToViewHome => 'سجل الدخول لعرض الصفحة الرئيسية';
+
+  @override
+  String get loginToViewHomeSubtitle => 'يجب تسجيل الدخول للوصول إلى لوحة التحكم المخصصة.';
+
+  @override
+  String get loginToOrder => 'سجل الدخول للطلب';
+
+  @override
+  String get loginToOrderSubtitle => 'يجب تسجيل الدخول لتقديم طلبات الخدمة.';
+
+  @override
+  String get loginToChat => 'سجل الدخول للدردشة';
+
+  @override
+  String get loginToChatSubtitle => 'يجب تسجيل الدخول للدردشة مع مصممينا.';
+
+  @override
+  String get loginToSettings => 'سجل الدخول للإعدادات';
+
+  @override
+  String get loginToSettingsSubtitle => 'يجب تسجيل الدخول لعرض وتغيير الإعدادات.';
+
+  @override
+  String get loginWithOtp => 'الدخول عبر رمز التحقق';
 }

@@ -58,10 +58,14 @@ class TLoginForm extends StatelessWidget {
                     Obx(
                       () => Checkbox(
                         value: controller.rememberMe.value,
-                        onChanged: (value) => controller.rememberMe.value = value!,
+                        onChanged: (value) =>
+                            controller.rememberMe.value = value!,
                       ),
                     ),
-                    const Text('Remember Me'),
+                    Text(
+                      t.rememberMe,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ],
                 ),
 
@@ -88,7 +92,7 @@ class TLoginForm extends StatelessWidget {
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('Sign In'),
+                          : Text(t.signIn),
                     ),
                   ),
                 ),
@@ -99,7 +103,7 @@ class TLoginForm extends StatelessWidget {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: controller.isLoading.value ? null : () => controller.loginWithOtp(),
-                    child: const Text('Login with OTP'),
+                    child: Text(t.loginWithOtp),
                   ),
                 ),
                 const SizedBox(height: TSizes.spaceBtwItems),

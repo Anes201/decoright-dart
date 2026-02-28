@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/helpers/helper_functions.dart';
+import 'package:decoright/l10n/app_localizations.dart';
 import '../../../controllers/message_input_controller.dart';
 
 class MessageInputWidget extends StatelessWidget {
@@ -13,6 +14,7 @@ class MessageInputWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = THelperFunctions.isDarkMode(context);
+    final i18n = AppLocalizations.of(context)!;
     final controller = Get.put(MessageInputController()); // Or Get.find() if already put elsewhere
 
     return Obx(
@@ -127,7 +129,7 @@ class MessageInputWidget extends StatelessWidget {
                                   const Spacer(),
                                   TextButton(
                                     onPressed: controller.cancelRecording,
-                                    child: const Text('Annuler', style: TextStyle(color: Colors.red, fontSize: 13)),
+                                    child: Text(i18n.cancelRecording, style: const TextStyle(color: Colors.red, fontSize: 13)),
                                   ),
                                 ],
                               )
@@ -138,7 +140,7 @@ class MessageInputWidget extends StatelessWidget {
                                 maxLines: 5,
                                 textInputAction: TextInputAction.newline,
                                 decoration: InputDecoration(
-                                  hintText: 'Envoyer un message...',
+                                  hintText: i18n.sendMessage,
                                   hintStyle: TextStyle(
                                     color: isDark ? TColors.grey : TColors.darkGrey,
                                     fontSize: 14,

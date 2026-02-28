@@ -24,6 +24,28 @@ class MessageModel {
     this.attachments,
   });
 
+  MessageModel copyWith({
+    String? id,
+    String? text,
+    String? imageUrl,
+    MessageType? type,
+    bool? isUserMessage,
+    DateTime? timestamp,
+    String? senderName,
+    List<dynamic>? attachments,
+  }) {
+    return MessageModel(
+      id: id ?? this.id,
+      text: text ?? this.text,
+      imageUrl: imageUrl ?? this.imageUrl,
+      type: type ?? this.type,
+      isUserMessage: isUserMessage ?? this.isUserMessage,
+      timestamp: timestamp ?? this.timestamp,
+      senderName: senderName ?? this.senderName,
+      attachments: attachments ?? this.attachments,
+    );
+  }
+
   // Helper factory for text messages
   factory MessageModel.text({
     required String text,

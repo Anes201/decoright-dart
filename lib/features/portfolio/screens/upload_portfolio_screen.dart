@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:decoright/utils/constants/sizes.dart';
+import 'package:decoright/l10n/app_localizations.dart';
 
 class UploadPortfolioScreen extends StatefulWidget {
   const UploadPortfolioScreen({super.key});
@@ -38,7 +39,7 @@ class _UploadPortfolioScreenState extends State<UploadPortfolioScreen> {
 
   Future<void> _upload() async {
     if (!_formKey.currentState!.validate() || _selectedFile == null) {
-      if (_selectedFile == null) Get.snackbar('Error', 'Please select a file');
+      if (_selectedFile == null) Get.snackbar(AppLocalizations.of(context)!.error, AppLocalizations.of(context)!.pleaseSelectFile);
       return;
     }
 
@@ -53,9 +54,9 @@ class _UploadPortfolioScreenState extends State<UploadPortfolioScreen> {
       );
       
       Get.back(result: true); // Return true to trigger refresh
-      Get.snackbar('Success', 'Item uploaded successfully');
+      Get.snackbar(AppLocalizations.of(context)!.done, AppLocalizations.of(context)!.itemUploadedSuccess);
     } catch (e) {
-      Get.snackbar('Error', 'Upload failed: $e');
+      Get.snackbar(AppLocalizations.of(context)!.error, "${AppLocalizations.of(context)!.uploadFailed}: $e");
     } finally {
       setState(() => _isLoading = false);
     }
@@ -63,8 +64,9 @@ class _UploadPortfolioScreenState extends State<UploadPortfolioScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final i18n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Upload Portfolio Item')),
+      appBar: AppBar(title: Text(i18n.uploadPortfolioItem)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
         child: Form(
@@ -73,15 +75,15 @@ class _UploadPortfolioScreenState extends State<UploadPortfolioScreen> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title', prefixIcon: Icon(Iconsax.text_block)),
-                validator: (v) => v!.isEmpty ? 'Required' : null,
+                decoration: InputDecoration(labelText: i18n.title, prefixIcon: const Icon(Iconsax.text_block)),
+                validator: (v) => v!.isEmpty ? i18n.required : null,
               ),
               const SizedBox(height: TSizes.spaceBtwInputFields),
               
               TextFormField(
                 controller: _descController,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Description', prefixIcon: Icon(Iconsax.note)),
+                decoration: InputDecoration(labelText: i18n.description, prefixIcon: const Icon(Iconsax.note)),
               ),
               const SizedBox(height: TSizes.spaceBtwSections),
               
@@ -109,12 +111,12 @@ class _UploadPortfolioScreenState extends State<UploadPortfolioScreen> {
                             Text(_selectedFile!.path.split('/').last),
                           ],
                         )
-                      : const Column(
+                      : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Iconsax.document_upload, size: 48, color: Colors.grey),
-                            SizedBox(height: 8),
-                            Text('Tap to select Image or Video'),
+                            const Icon(Iconsax.document_upload, size: 48, color: Colors.grey),
+                            const SizedBox(height: 8),
+                            Text(i18n.tapToSelectMedia),
                           ],
                         ),
                 ),
@@ -127,7 +129,7 @@ class _UploadPortfolioScreenState extends State<UploadPortfolioScreen> {
                   onPressed: _isLoading ? null : _upload,
                   child: _isLoading 
                     ? const CircularProgressIndicator(color: Colors.white) 
-                    : const Text('Upload Item'),
+                    : Text(i18n.uploadItem),
                 ),
               ),
             ],

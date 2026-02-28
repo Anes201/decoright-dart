@@ -7,7 +7,9 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:decoright/features/personalization/controllers/profile_controller.dart';
 import 'package:decoright/features/portfolio/screens/upload_portfolio_screen.dart';
+import 'package:decoright/utils/helpers/helper_functions.dart';
 import 'package:decoright/utils/loaders/shimmer_loader.dart';
+import 'package:decoright/l10n/app_localizations.dart';
 
 class PortfolioScreen extends StatelessWidget {
   const PortfolioScreen({super.key});
@@ -16,10 +18,11 @@ class PortfolioScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(PortfolioController());
     final profileController = Get.put(ProfileController()); // Ensure profile loaded
+    final i18n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Interior Gallery'),
+        title: Text(i18n.interiorGallery),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -32,24 +35,36 @@ class PortfolioScreen extends StatelessWidget {
         }
 
         if (controller.galleryItems.isEmpty) {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Iconsax.gallery, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
-                Text('No gallery items yet'),
-              ],
+          return RefreshIndicator(
+            onRefresh: controller.loadGalleryItems,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Iconsax.gallery, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      Text(i18n.noGalleryItems),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.all(TSizes.defaultSpace),
-          itemCount: controller.galleryItems.length,
+        return RefreshIndicator(
+          onRefresh: controller.loadGalleryItems,
+          child: ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(TSizes.defaultSpace),
+            itemCount: controller.galleryItems.length,
           separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwSections),
           itemBuilder: (context, index) {
-            final isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+            final isDark = THelperFunctions.isDarkMode(context);
             final item = controller.galleryItems[index];
             final beforeUrl = item['before_image_url'] as String?;
             final afterUrl = item['after_image_url'] as String?;
@@ -81,7 +96,7 @@ class PortfolioScreen extends StatelessWidget {
                             afterImage: afterUrl,
                             height: 250,
                           )
-                        : _buildNoImagePlaceholder(isDark),
+                        : _buildNoImagePlaceholder(context, isDark, i18n),
                   ),
 
                   /// Info Section
@@ -110,6 +125,7 @@ class PortfolioScreen extends StatelessWidget {
               ),
             );
           },
+        ),
         );
       }),
       floatingActionButton: Obx(() {
@@ -130,7 +146,7 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNoImagePlaceholder(bool isDark) {
+  Widget _buildNoImagePlaceholder(BuildContext context, bool isDark, AppLocalizations i18n) {
     return Container(
       height: 200,
       width: double.infinity,
@@ -140,9 +156,9 @@ class PortfolioScreen extends StatelessWidget {
         children: [
           Icon(Iconsax.image, size: 48, color: isDark ? Colors.grey[700] : Colors.grey[400]),
           const SizedBox(height: 8),
-          const Text(
-            "No images presented",
-            style: TextStyle(
+          Text(
+            i18n.noFeaturedProjects,
+            style: const TextStyle(
               color: Colors.grey,
               fontWeight: FontWeight.w500,
             ),

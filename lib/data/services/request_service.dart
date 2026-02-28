@@ -1,4 +1,6 @@
 import 'package:decoright/core/config/supabase_config.dart';
+import 'package:get/get.dart';
+import 'package:decoright/utils/helpers/network_manager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RequestService {
@@ -38,6 +40,10 @@ class RequestService {
 
   /// Get current user's service requests
   Future<List<Map<String, dynamic>>> getMyRequests() async {
+    // Check Connectivity
+    final isConnected = await NetworkManager.instance.isConnected();
+    if (!isConnected) return [];
+
     final user = _client.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
 

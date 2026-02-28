@@ -43,12 +43,12 @@ class LoginScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account? "),
+                  Text(t.dontHaveAccount + " "),
                   TextButton(
                     onPressed: () => Get.to(() => const SignUpScreen()),
                     child: Text(
-                      "Sign Up",
-                      style: TextStyle(
+                      t.signUp,
+                      style: const TextStyle(
                         color: TColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
@@ -61,7 +61,7 @@ class LoginScreen extends StatelessWidget {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: () => Get.find<AuthController>().loginAsGuest(), 
-                  child: const Text('Continue as Guest'),
+                  child: Text(t.continueAsGuest),
                 ),
               ),
             ],

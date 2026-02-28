@@ -1,6 +1,8 @@
-import 'package:decoright/utils/logging/logger.dart';
 import 'package:decoright/core/config/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:decoright/utils/helpers/network_manager.dart';
+
+import '../../utils/logging/logger.dart';
 
 class AuthService {
   final SupabaseClient _client = SupabaseConfig.client;
@@ -12,6 +14,10 @@ class AuthService {
     required String fullName,
     String? phone,
   }) async {
+    // Check Connectivity
+    final isConnected = await NetworkManager.instance.isConnected();
+    if (!isConnected) throw Exception('No Internet Connection');
+
     return await _client.auth.signUp(
       email: email,
       password: password,
@@ -71,6 +77,10 @@ class AuthService {
     required String email,
     required String password,
   }) async {
+    // Check Connectivity
+    final isConnected = await NetworkManager.instance.isConnected();
+    if (!isConnected) throw Exception('No Internet Connection');
+
     return await _client.auth.signInWithPassword(
       email: email,
       password: password,

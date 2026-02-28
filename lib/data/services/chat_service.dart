@@ -1,4 +1,5 @@
 import 'package:decoright/core/config/supabase_config.dart';
+import 'package:decoright/utils/helpers/network_manager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
@@ -36,21 +37,10 @@ class ChatService {
         chatRoomId = roomResponse['id'];
     }
 
-    Map<String, dynamic>? firstMessage;
+    // 2. Upload Attachments First
+    List<Map<String, dynamic>> uploadedAttachments = [];
+    String? mediaUrl;
 
-    // 2. Send Text Message (if content exists)
-    if (content != null && content.isNotEmpty) {
-      firstMessage = await _client.from('messages').insert({
-        'chat_room_id': chatRoomId,
-        'request_id': requestId,
-        'sender_id': user.id,
-        'content': content,
-        'message_type': 'TEXT',
-        'is_read': false,
-      }).select().single();
-    }
-
-    // 3. Send Attachments as separate messages
     if (attachments != null && attachments.isNotEmpty) {
       for (final file in attachments) {
          final fileName = '$requestId/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
@@ -58,39 +48,57 @@ class ChatService {
               .from('request-attachments')
               .upload(fileName, file);
 
-         final mediaUrl = _client.storage.from('request-attachments').getPublicUrl(fileName);
+         final url = _client.storage.from('request-attachments').getPublicUrl(fileName);
+         if (mediaUrl == null) mediaUrl = url; // Set primary media_url
 
-         final msg = await _client.from('messages').insert({
-            'chat_room_id': chatRoomId,
-            'request_id': requestId,
-            'sender_id': user.id,
-            'content': '',
-            'message_type': isVoiceMessage ? 'AUDIO' : 'IMAGE',
-            'media_url': mediaUrl,
-            'duration_seconds': isVoiceMessage ? 0 : null,
-            'is_read': false,
-         }).select().single();
-
-         if (firstMessage == null) {
-           firstMessage = msg;
-         }
+         uploadedAttachments.add({
+           'url': url,
+           'name': file.path.split('/').last,
+           'type': isVoiceMessage ? 'audio' : 'image',
+         });
       }
     }
-    
-    return firstMessage ?? {};
+
+    // 3. Send Single Message Record (Text + Attached Media)
+    // Don't send if completely empty
+    if ((content == null || content.trim().isEmpty) && uploadedAttachments.isEmpty) {
+      return {};
+    }
+
+    final messageType = isVoiceMessage ? 'AUDIO' : (uploadedAttachments.isNotEmpty ? 'IMAGE' : 'TEXT');
+
+    final message = await _client.from('messages').insert({
+      'chat_room_id': chatRoomId,
+      'request_id': requestId,
+      'sender_id': user.id,
+      'content': content ?? '',
+      'message_type': messageType,
+      'media_url': mediaUrl, // Keep primary URL for backward compatibility if needed
+      'attachments': uploadedAttachments.isNotEmpty ? uploadedAttachments : null,
+      'duration_seconds': isVoiceMessage ? 0 : null,
+      'is_read': false,
+    }).select().single();
+
+    return message;
   }
 
-  /// Get messages for a request
   Future<List<Map<String, dynamic>>> getMessages(String requestId) async {
-    // Need to find chat_room_id first? Or join.
-    // Supabase can query nested: chat_rooms!inner(request_id)
-    final response = await _client
-        .from('messages')
-        .select('*, chat_rooms!inner(request_id), profiles(full_name)') // updated profile cols
-        .eq('chat_rooms.request_id', requestId)
-        .order('created_at', ascending: true); // created_at
+    try {
+      // Check Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) return [];
 
-    return List<Map<String, dynamic>>.from(response);
+      final response = await _client
+          .from('messages')
+          .select('*, chat_rooms!inner(request_id), profiles(full_name)')
+          .eq('chat_rooms.request_id', requestId)
+          .order('created_at', ascending: true);
+
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('Error fetching messages: $e');
+      return [];
+    }
   }
 
   /// Subscribe to new messages (realtime)

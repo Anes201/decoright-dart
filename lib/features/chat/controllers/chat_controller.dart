@@ -77,23 +77,14 @@ class ChatController extends GetxController {
   /// Subscribe to realtime message updates
   void subscribeToRealtime() {
     final currentUserId = _authService.getCurrentUser()?.id ?? '';
-    
+
     _subscription = _chatService.subscribeToMessages(
       requestId,
-      (payload) {
-        final data = payload['new'];
-        final eventType = payload['event_type'];
-
-        if (eventType == 'INSERT') {
-          final message = _mapMessage(data, currentUserId);
-          if (!messages.any((m) => m.id == message.id)) {
-            messages.insert(0, message);
-          }
-        } else if (eventType == 'UPDATE') {
-          final index = messages.indexWhere((m) => m.id == data['id']);
-          if (index != -1) {
-            messages[index] = _mapMessage(data, currentUserId, oldSenderName: messages[index].senderName);
-          }
+      (rawRecord) {
+        // The Supabase realtime callback already passes the record directly
+        final message = _mapMessage(rawRecord, currentUserId);
+        if (!messages.any((m) => m.id == message.id)) {
+          messages.insert(0, message);
         }
       },
     );
@@ -141,7 +132,26 @@ class ChatController extends GetxController {
       // Update the temporary message with real ID and data
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
-        messages[index] = _mapMessage(response, currentUserId, isMine: true);
+        if (response.isNotEmpty) {
+          final realId = response['id'];
+          final existingIndex = messages.indexWhere((m) => m.id == realId);
+          
+          if (existingIndex != -1 && existingIndex != index) {
+            // Realtime already picked it up! Transfer local attachments to avoid loading spinner, and delete temp
+            final localAttachments = messages[index].attachments;
+            messages.removeAt(index);
+            final newExistingIndex = messages.indexWhere((m) => m.id == realId);
+            if (newExistingIndex != -1) {
+              messages[newExistingIndex] = messages[newExistingIndex].copyWith(attachments: localAttachments);
+            }
+          } else {
+            // Realtime hasn't fired yet
+            final mapped = _mapMessage(response, currentUserId, isMine: true);
+            messages[index] = mapped.copyWith(attachments: messages[index].attachments); // Preserve local attachments
+          }
+        } else {
+          messages.removeAt(index);
+        }
       }
     } catch (e) {
       Get.snackbar(
@@ -185,12 +195,20 @@ class ChatController extends GetxController {
       final tempId = DateTime.now().millisecondsSinceEpoch.toString();
       final tempMessage = MessageModel(
         id: tempId,
-        text: text.trim().isEmpty ? 'Pièce jointe' : text.trim(),
-        type: MessageType.text,
+        text: text.trim().isEmpty ? '' : text.trim(),
+        // If there are attachments reveal them as image type immediately
+        type: attachmentsToSend.isNotEmpty ? MessageType.image : MessageType.text,
         isUserMessage: true,
         timestamp: DateTime.now(),
         senderName: 'You',
-        attachments: attachmentsToSend.map((f) => {'path': f.path, 'name': f.path.split('/').last, 'isLocal': true}).toList(),
+        attachments: attachmentsToSend
+            .map((f) => {
+                  'path': f.path,
+                  'name': f.path.split('/').last,
+                  'isLocal': true,
+                  'type': 'image', // Always mark local as image for correct rendering
+                })
+            .toList(),
       );
       
       messages.insert(0, tempMessage);
@@ -198,14 +216,33 @@ class ChatController extends GetxController {
 
       final response = await _chatService.sendMessage(
         requestId: requestId,
-        content: text.trim().isEmpty ? 'Pièce jointe' : text.trim(),
+        content: text.trim().isEmpty ? '' : text.trim(),
         attachments: attachmentsToSend,
       );
       
       // Update the temporary message with real ID and data
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
-        messages[index] = _mapMessage(response, currentUserId, isMine: true);
+        if (response.isNotEmpty) {
+          final realId = response['id'];
+          final existingIndex = messages.indexWhere((m) => m.id == realId);
+          
+          if (existingIndex != -1 && existingIndex != index) {
+            // Realtime already picked it up! Transfer local attachments to avoid loading spinner, and delete temp
+            final localAttachments = messages[index].attachments;
+            messages.removeAt(index);
+            final newExistingIndex = messages.indexWhere((m) => m.id == realId);
+            if (newExistingIndex != -1) {
+              messages[newExistingIndex] = messages[newExistingIndex].copyWith(attachments: localAttachments);
+            }
+          } else {
+            // Realtime hasn't fired yet
+            final mapped = _mapMessage(response, currentUserId, isMine: true);
+            messages[index] = mapped.copyWith(attachments: messages[index].attachments); // Preserve local attachments
+          }
+        } else {
+          messages.removeAt(index);
+        }
       }
     } catch (e) {
       Get.snackbar(

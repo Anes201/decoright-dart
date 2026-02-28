@@ -1,4 +1,5 @@
 import 'package:decoright/core/config/supabase_config.dart';
+import 'package:decoright/utils/helpers/network_manager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
@@ -7,13 +8,23 @@ class PortfolioService {
 
   /// Get all projects (for Home/Featured)
   Future<List<Map<String, dynamic>>> getProjects() async {
-    final response = await _client
-        .from('projects') 
-        .select()
-        .eq('visibility', 'PUBLIC') 
-        .order('created_at', ascending: false);
+    try {
+      // Check Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) return [];
 
-    return List<Map<String, dynamic>>.from(response);
+      final response = await _client
+          .from('projects')
+          .select()
+          .eq('visibility', 'PUBLIC')
+          .order('created_at', ascending: false);
+
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      // Handle error, e.g., log it or return an empty list
+      print('Error fetching projects: $e');
+      return [];
+    }
   }
 
   /// Get all gallery items (for Portfolio with before/after)

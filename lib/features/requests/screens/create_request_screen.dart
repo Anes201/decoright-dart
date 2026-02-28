@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../../utils/helpers/helper_functions.dart';
 import '../../../utils/constants/colors.dart';
+import 'package:decoright/l10n/app_localizations.dart';
 
 class CreateRequestScreen extends StatelessWidget {
   const CreateRequestScreen({super.key});
@@ -15,10 +16,12 @@ class CreateRequestScreen extends StatelessWidget {
     final controller = Get.find<RequestController>();
     final isDark = THelperFunctions.isDarkMode(context);
 
+    final i18n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: isDark ? TColors.dark : TColors.light,
       appBar: AppBar(
-        title: const Text('Request a Service'),
+        title: Text(i18n.requestAService),
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: isDark ? Colors.white : Colors.black,
@@ -30,24 +33,24 @@ class CreateRequestScreen extends StatelessWidget {
             /// 1. Service & Space Selection Card
             _buildSectionCard(
               context,
-              title: 'Project Basics',
+              title: i18n.projectBasics,
               isDark: isDark,
               child: Column(
                 children: [
                   _buildDropdown(
-                    label: 'Service Type',
+                    label: i18n.serviceType,
                     value: controller.selectedServiceTypeId,
                     items: controller.serviceTypes,
                     icon: Iconsax.category,
-                    hint: 'Select Service Type',
+                    hint: i18n.selectServiceType,
                   ),
                   const SizedBox(height: TSizes.spaceBtwInputFields),
                   _buildDropdown(
-                    label: 'Space Type',
+                    label: i18n.spaceType,
                     value: controller.selectedSpaceTypeId,
                     items: controller.spaceTypes,
                     icon: Iconsax.house,
-                    hint: 'Select Space Type',
+                    hint: i18n.selectSpaceType,
                   ),
                 ],
               ),
@@ -57,14 +60,14 @@ class CreateRequestScreen extends StatelessWidget {
             /// 2. Dimensions & Location Card
             _buildSectionCard(
               context,
-              title: 'Location & Dimensions',
+              title: i18n.locationAndDimensions,
               isDark: isDark,
               child: Column(
                 children: [
                    _buildTextField(
-                    label: 'Location',
+                    label: i18n.location,
                     controller: controller.locationController,
-                    hint: 'Enter project location...',
+                    hint: i18n.enterLocation,
                     icon: Iconsax.location,
                   ),
                   const SizedBox(height: TSizes.spaceBtwInputFields),
@@ -72,7 +75,7 @@ class CreateRequestScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _buildTextField(
-                          label: 'Width (m)',
+                          label: i18n.width,
                           controller: controller.widthController,
                           hint: '0.0',
                           icon: Iconsax.maximize,
@@ -82,7 +85,7 @@ class CreateRequestScreen extends StatelessWidget {
                       const SizedBox(width: TSizes.spaceBtwInputFields),
                       Expanded(
                         child: _buildTextField(
-                          label: 'Height (m)',
+                          label: i18n.height,
                           controller: controller.heightController,
                           hint: '0.0',
                           icon: Iconsax.maximize,
@@ -99,21 +102,21 @@ class CreateRequestScreen extends StatelessWidget {
             /// 3. Details & Duration Card
             _buildSectionCard(
               context,
-              title: 'Request Details',
+              title: i18n.requestDetails,
               isDark: isDark,
               child: Column(
                 children: [
                   _buildTextField(
-                    label: 'Description / Special Requirements',
+                    label: i18n.descriptionRequirements,
                     controller: controller.descriptionController,
-                    hint: 'Describe your requirements...',
+                    hint: i18n.describeRequirements,
                     maxLines: 4,
                   ),
                   const SizedBox(height: TSizes.spaceBtwInputFields),
                   _buildTextField(
-                    label: 'Requested Duration (Days)',
+                    label: i18n.requestedDuration,
                     controller: controller.durationController,
-                    hint: 'Optional: estimated days',
+                    hint: i18n.optionalDays,
                     icon: Iconsax.clock,
                     keyboardType: TextInputType.number,
                   ),
@@ -125,7 +128,7 @@ class CreateRequestScreen extends StatelessWidget {
             /// 4. Attachments Card
             _buildSectionCard(
               context,
-              title: 'Attachments',
+              title: i18n.attachments,
               isDark: isDark,
               trailing: IconButton(
                 onPressed: controller.pickFiles,
@@ -137,7 +140,7 @@ class CreateRequestScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: TSizes.md),
                       child: Text(
-                        'No files attached',
+                        i18n.noFilesAttached,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
@@ -197,7 +200,7 @@ class CreateRequestScreen extends StatelessWidget {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text('Submit Service Request', style: TextStyle(fontWeight: FontWeight.bold)),
+                      : Text(i18n.submitRequest, style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
@@ -298,14 +301,18 @@ class CreateRequestScreen extends StatelessWidget {
             isExpanded: true,
             value: value.value,
             items: items
-                .map((item) => DropdownMenuItem(
-                      value: item['id'] as String,
-                      child: Text(
-                        item['name'].toString().replaceAll('_', ' '),
-                        style: const TextStyle(fontSize: 14),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ))
+                .map((item) {
+                  final locale = Get.locale?.languageCode ?? 'en';
+                  final displayName = item['display_name_$locale'] ?? item['display_name_en'] ?? item['name'];
+                  return DropdownMenuItem(
+                    value: item['id'] as String,
+                    child: Text(
+                      displayName.toString().replaceAll('_', ' '),
+                      style: const TextStyle(fontSize: 14),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                })
                 .toList(),
             onChanged: (val) => value.value = val,
           ),

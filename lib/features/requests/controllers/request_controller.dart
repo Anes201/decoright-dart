@@ -42,8 +42,8 @@ class RequestController extends GetxController {
 
   Future<void> fetchTypes() async {
     try {
-      final sTypes = await SupabaseConfig.client.from('service_types').select('id, name');
-      final spTypes = await SupabaseConfig.client.from('space_types').select('id, name');
+      final sTypes = await SupabaseConfig.client.from('service_types').select('id, name, display_name_en, display_name_ar, display_name_fr');
+      final spTypes = await SupabaseConfig.client.from('space_types').select('id, name, display_name_en, display_name_ar, display_name_fr');
       
       serviceTypes.value = List<Map<String, dynamic>>.from(sTypes);
       spaceTypes.value = List<Map<String, dynamic>>.from(spTypes);
@@ -238,18 +238,15 @@ class RequestController extends GetxController {
         Get.find<MessageController>().loadConversations();
       }
 
-      // Navigate to Requests Tab (Index 1) if possible
+      // Navigate to Requests Tab (Index 2) and close create screen
       try {
         if (Get.isRegistered<NavigationController>()) {
-          Get.find<NavigationController>().selectedIndex.value = 1;
+          Get.find<NavigationController>().selectedIndex.value = 2;
         }
+        Get.offAll(() => const NavigationMenu());
       } catch (e) {
-        // Ignore if navigation controller issues
+        Get.back(); // Fallback if NavigationController fails
       }
-
-      // Close create screen
-      Get.back();
-
       Get.snackbar(
         'Success',
         'Request created successfully!',

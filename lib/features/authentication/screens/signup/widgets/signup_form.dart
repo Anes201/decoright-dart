@@ -60,10 +60,10 @@ class SignUpForm extends StatelessWidget {
           TextFormField(
             controller: controller.phoneNumberController,
             inputFormatters: [DzPhoneNumberFormatter()],
-            decoration: const InputDecoration(
-              labelText: 'Phone Number',
-              prefixIcon: Icon(Iconsax.call),
-              hintText: '+213 5XX XX XX XX',
+            decoration: InputDecoration(
+              labelText: t.phoneNumber,
+              prefixIcon: const Icon(Iconsax.call),
+              hintText: t.phoneNumberHint,
             ),
             keyboardType: TextInputType.phone,
           ),

@@ -42,7 +42,7 @@ class NavigationMenu extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Iconsax.image),
-                label: 'Gallery',
+                label: AppLocalizations.of(context)!.gallery,
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Iconsax.calendar),
@@ -50,7 +50,7 @@ class NavigationMenu extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Iconsax.message),
-                label: 'Chat',
+                label: AppLocalizations.of(context)!.chat_tab,
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Iconsax.setting),
@@ -85,23 +85,24 @@ class NavigationController extends GetxController {
 
     // Initialize screens list
     if (isGuest) {
+      final i18n = AppLocalizations.of(Get.context!)!;
       screens = [
-        const GuestBarrier(
-          title: 'Login to View Home',
-          message: 'You need to be logged in to access the personalized dashboard.',
+        GuestBarrier(
+          title: i18n.loginToViewHome,
+          message: i18n.loginToViewHomeSubtitle,
         ),
-        const PortfolioScreen(), // Guest CAN see only the gallery
-        const GuestBarrier(
-          title: 'Login to Order',
-          message: 'You need to be logged in to submit service requests.',
+        const PortfolioScreen(),
+        GuestBarrier(
+          title: i18n.loginToOrder,
+          message: i18n.loginToOrderSubtitle,
         ),
-        const GuestBarrier(
-          title: 'Login to Chat',
-          message: 'You need to be logged in to chat with our designers.',
+        GuestBarrier(
+          title: i18n.loginToChat,
+          message: i18n.loginToChatSubtitle,
         ),
-        const GuestBarrier(
-          title: 'Login to Settings',
-          message: 'You need to be logged in to view and change settings.',
+        GuestBarrier(
+          title: i18n.loginToSettings,
+          message: i18n.loginToSettingsSubtitle,
         ),
       ];
     } else {
