@@ -21,9 +21,10 @@ class LoginScreen extends StatelessWidget {
     final t = AppLocalizations.of(context)!;
 
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: TSpacingStyles.paddingWithAppBarHeight,
+          padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             children: [
               /// logo, title and subtitle

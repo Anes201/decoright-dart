@@ -294,6 +294,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectSpaceType => 'اختر نوع المساحة';
 
   @override
+  String get spaceTypes => 'أنواع المساحات';
+
+  @override
+  String get noSpaceTypesFound => 'لم يتم العثور على أنواع للمساحات.';
+
+  @override
   String get locationAndDimensions => 'الموقع والأبعاد';
 
   @override
@@ -454,4 +460,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loginWithOtp => 'الدخول عبر رمز التحقق';
+
+  @override
+  String get aboutProject => 'عن المشروع';
 }

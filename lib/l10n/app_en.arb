@@ -94,6 +94,8 @@
   "spaceType": "Space Type",
   "selectServiceType": "Select Service Type",
   "selectSpaceType": "Select Space Type",
+  "spaceTypes": "Space Types",
+  "noSpaceTypesFound": "No space types found.",
   "locationAndDimensions": "Location & Dimensions",
   "location": "Location",
   "enterLocation": "Enter project location...",
@@ -152,5 +154,6 @@
   "loginWithOtp": "Login with OTP",
   "login": "Login",
   "firstName": "First Name",
-  "lastName": "Last Name"
+  "lastName": "Last Name",
+  "aboutProject": "About Project"
 }

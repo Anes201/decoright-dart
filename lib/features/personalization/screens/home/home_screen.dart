@@ -1,8 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:decoright/navigation_menu.dart';
 import 'package:decoright/features/personalization/controllers/profile_controller.dart';
+import 'package:decoright/common/widgets/guest/guest_barrier.dart';
+import 'package:decoright/features/authentication/controllers/auth_controller.dart';
 import 'package:decoright/features/portfolio/controllers/portfolio_controller.dart';
+import 'package:decoright/features/portfolio/controllers/space_types_controller.dart';
 import 'package:decoright/features/portfolio/screens/project_detail_screen.dart'; // Added import
+import 'package:decoright/features/portfolio/screens/all_space_types_screen.dart';
+import 'package:decoright/features/portfolio/screens/all_service_types_screen.dart';
 import 'package:decoright/features/requests/controllers/request_controller.dart';
 import 'package:decoright/features/requests/screens/create_request_screen.dart';
 import 'package:decoright/utils/constants/colors.dart';
@@ -24,6 +29,7 @@ class HomeScreen extends StatelessWidget {
     final portfolioController = Get.put(PortfolioController());
     final servicesController = Get.put(ServicesController());
     final requestController = Get.put(RequestController());
+    final spaceTypesController = Get.put(SpaceTypesController());
     final profileController = Get.find<ProfileController>();
     final i18n = AppLocalizations.of(context)!;
     final isDark = THelperFunctions.isDarkMode(context);
@@ -36,6 +42,7 @@ class HomeScreen extends StatelessWidget {
               portfolioController.loadProjects(),
               servicesController.loadServices(),
               requestController.loadRequests(),
+              spaceTypesController.loadSpaceTypes(),
             ]);
           },
           child: SingleChildScrollView(
@@ -82,16 +89,20 @@ class HomeScreen extends StatelessWidget {
                     }),
   
                     /// Services We Offer Section
-                    _buildSectionHeader(context, i18n.servicesWeOffer, null, i18n),
+                    _buildSectionHeader(context, i18n.servicesWeOffer, () {
+                      Get.to(() => const AllServiceTypesScreen());
+                    }, i18n),
                     const SizedBox(height: TSizes.spaceBtwItems),
                     Obx(() {
                       if (servicesController.isLoading.value) {
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: 3,
-                          separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
-                          itemBuilder: (_, __) => const TShimmerEffect(width: double.infinity, height: 120),
+                        return SizedBox(
+                          height: 200,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 3,
+                            separatorBuilder: (_, __) => const SizedBox(width: TSizes.spaceBtwItems),
+                            itemBuilder: (_, __) => const TShimmerEffect(width: 250, height: 200),
+                          ),
                         );
                       }
                       
@@ -99,15 +110,105 @@ class HomeScreen extends StatelessWidget {
                         return Center(child: Text(i18n.noServicesFound));
                       }
   
-                    return ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: servicesController.services.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
-                        itemBuilder: (context, index) {
-                          final service = servicesController.services[index];
-                          return _buildServiceCard(context, service, i18n);
-                        },
+                      return SizedBox(
+                        height: 220,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: servicesController.services.length > 5 ? 5 : servicesController.services.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: TSizes.spaceBtwItems),
+                          itemBuilder: (context, index) {
+                            final service = servicesController.services[index];
+                            return SizedBox(
+                              width: 260,
+                              child: _buildServiceCardHorizontal(context, service, i18n),
+                            );
+                          },
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: TSizes.spaceBtwSections),
+                    
+                    /// Space Types Section (New)
+                    _buildSectionHeader(context, i18n.spaceTypes, () {
+                      Get.to(() => const AllSpaceTypesScreen());
+                    }, i18n),
+                    const SizedBox(height: TSizes.spaceBtwItems),
+                    
+                    Obx(() {
+                      if (spaceTypesController.isLoading.value) {
+                        return SizedBox(
+                          height: 120,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 3,
+                            separatorBuilder: (_, __) => const SizedBox(width: TSizes.spaceBtwItems),
+                            itemBuilder: (_, __) => const TShimmerEffect(width: 150, height: 120),
+                          ),
+                        );
+                      }
+                      
+                      if (spaceTypesController.spaceTypes.isEmpty) {
+                        return Center(child: Text(i18n.noSpaceTypesFound));
+                      }
+  
+                      return SizedBox(
+                        height: 140, // Increased height
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: spaceTypesController.spaceTypes.length > 3 ? 3 : spaceTypesController.spaceTypes.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: TSizes.spaceBtwItems),
+                          itemBuilder: (context, index) {
+                            final space = spaceTypesController.spaceTypes[index];
+                            final locale = Get.locale?.languageCode ?? 'en';
+                            final title = space['display_name_$locale'] ?? space['display_name_en'] ?? space['name'];
+
+                            IconData getIconForSpace(String name) {
+                              final n = name.toLowerCase();
+                              if (n.contains("living")) return Iconsax.home;
+                              if (n.contains("bed")) return Iconsax.moon;
+                              if (n.contains("kitchen")) return Iconsax.cake;
+                              if (n.contains("bath")) return Iconsax.drop;
+                              if (n.contains("office") || n.contains("work")) return Iconsax.briefcase;
+                              if (n.contains("outdoor") || n.contains("garden")) return Iconsax.tree;
+                              return Iconsax.category;
+                            }
+
+                            return GestureDetector(
+                              onTap: () => Get.to(() => const AllSpaceTypesScreen()),
+                              child: Container(
+                                width: 150,
+                                padding: const EdgeInsets.all(TSizes.md),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
+                                  color: isDark ? const Color(0xFF272727) : Colors.white,
+                                  border: Border.all(color: isDark ? TColors.darkGrey : TColors.grey.withOpacity(0.3)),
+                                  boxShadow: [
+                                    if (!isDark)
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(getIconForSpace(space['name'] ?? ''), size: 32, color: TColors.primary),
+                                    const SizedBox(height: TSizes.sm),
+                                    Text(
+                                      title,
+                                      style: Theme.of(context).textTheme.titleMedium,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       );
                     }),
                     const SizedBox(height: TSizes.spaceBtwSections),
@@ -170,6 +271,59 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServiceCardHorizontal(BuildContext context, Map<String, dynamic> service, AppLocalizations i18n) {
+    final isDark = THelperFunctions.isDarkMode(context);
+    final locale = Get.locale?.languageCode ?? 'en';
+    final displayName = service['display_name_$locale'] ?? service['display_name_en'] ?? service['name'];
+    final imageUrl = service['image_url'];
+
+    return GestureDetector(
+      onTap: () => Get.to(() => const CreateRequestScreen()),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
+          color: isDark ? TColors.darkContainer : Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            )
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Image
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(TSizes.cardRadiusLg)),
+              child: imageUrl != null && imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const TShimmerEffect(width: double.infinity, height: 140, radius: 0),
+                      errorWidget: (context, url, error) => _buildNoImagePlaceholder(context, isDark, i18n),
+                    )
+                  : _buildNoImagePlaceholder(context, isDark, i18n),
+            ),
+            /// Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: TSizes.md, vertical: TSizes.sm),
+              child: Text(
+                displayName,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -244,7 +398,17 @@ class HomeScreen extends StatelessWidget {
         ),
         if (onTap != null)
           TextButton(
-            onPressed: onTap,
+            onPressed: () {
+              final authController = AuthController.instance;
+              if (authController.isGuest.value) {
+                Get.to(() => GuestBarrier(
+                  title: i18n.loginToViewHome, // Or more specific if needed
+                  message: i18n.loginToViewHomeSubtitle,
+                ));
+              } else {
+                onTap();
+              }
+            },
             child: Text(i18n.viewAll),
           ),
       ],
@@ -372,7 +536,15 @@ class HomeScreen extends StatelessWidget {
   Widget _buildPortfolioCard(BuildContext context, Map<String, dynamic> item) {
     final i18n = AppLocalizations.of(context)!;
     final isDark = THelperFunctions.isDarkMode(context);
-    final imageUrl = item['main_image_url'] as String?;
+    
+    // Find imageUrl: check main_image_url first, then join data
+    String? imageUrl = item['main_image_url'] as String?;
+    if (imageUrl == null || imageUrl.isEmpty) {
+      final List images = item['project_images'] ?? [];
+      final coverImg = images.firstWhereOrNull((img) => img['is_cover'] == true);
+      imageUrl = coverImg?['image_url'] ?? (images.isNotEmpty ? images.first['image_url'] : null);
+    }
+    
     final title = item['title'] ?? 'Untitled Project';
     final service = item['service_type']?.toString().replaceAll('_', ' ') ?? 'Interior';
 

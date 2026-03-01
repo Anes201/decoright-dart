@@ -103,6 +103,8 @@
   "spaceType": "نوع المساحة",
   "selectServiceType": "اختر نوع الخدمة",
   "selectSpaceType": "اختر نوع المساحة",
+  "spaceTypes": "أنواع المساحات",
+  "noSpaceTypesFound": "لم يتم العثور على أنواع للمساحات.",
   "locationAndDimensions": "الموقع والأبعاد",
   "location": "الموقع",
   "enterLocation": "أدخل موقع المشروع...",
@@ -161,5 +163,6 @@
   "loginWithOtp": "الدخول عبر رمز التحقق",
   "login": "تسجيل الدخول",
   "firstName": "الاسم الأول",
-  "lastName": "الاسم الأخير"
+  "lastName": "الاسم الأخير",
+  "aboutProject": "عن المشروع"
 }

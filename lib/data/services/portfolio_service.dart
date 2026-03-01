@@ -6,36 +6,74 @@ import 'dart:io';
 class PortfolioService {
   final SupabaseClient _client = SupabaseConfig.client;
 
-  /// Get all projects (for Home/Featured)
-  Future<List<Map<String, dynamic>>> getProjects() async {
+  /// Get all projects (filtered by visibility)
+  Future<List<Map<String, dynamic>>> getProjects({bool isAuthenticated = false}) async {
+    try {
+      // Check Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) return [];
+
+      var query = _client.from('projects').select('*, project_images(*)');
+
+      // Visibility Rules:
+      // - GUEST: Can only see PUBLIC
+      // - AUTHENTICATED: Can see PUBLIC and CLIENTS
+      // - HIDDEN: No one sees these via this API
+      if (isAuthenticated) {
+        query = query.or('visibility.eq.PUBLIC,visibility.eq.CLIENTS');
+      } else {
+        query = query.eq('visibility', 'PUBLIC');
+      }
+
+      final response = await query.order('created_at', ascending: false);
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('Error fetching projects: $e');
+      return [];
+    }
+  }
+
+  /// Get all images for a specific project
+  Future<List<Map<String, dynamic>>> getProjectImages(String projectId) async {
     try {
       // Check Connectivity
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) return [];
 
       final response = await _client
-          .from('projects')
+          .from('project_images')
           .select()
-          .eq('visibility', 'PUBLIC')
-          .order('created_at', ascending: false);
+          .eq('project_id', projectId)
+          .order('sort_order', ascending: true);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      // Handle error, e.g., log it or return an empty list
-      print('Error fetching projects: $e');
+      print('Error fetching project images: $e');
       return [];
     }
   }
 
-  /// Get all gallery items (for Portfolio with before/after)
-  Future<List<Map<String, dynamic>>> getGalleryItems() async {
-    final response = await _client
-        .from('gallery_items')
-        .select()
-        .eq('visibility', 'PUBLIC')
-        .order('created_at', ascending: false);
+  /// Get all gallery items (filtered by visibility)
+  Future<List<Map<String, dynamic>>> getGalleryItems({bool isAuthenticated = false}) async {
+    try {
+      // Check Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) return [];
 
-    return List<Map<String, dynamic>>.from(response);
+      var query = _client.from('gallery_items').select();
+
+      if (isAuthenticated) {
+        query = query.or('visibility.eq.PUBLIC,visibility.eq.CLIENTS');
+      } else {
+        query = query.eq('visibility', 'PUBLIC');
+      }
+
+      final response = await query.order('created_at', ascending: false);
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('Error fetching gallery items: $e');
+      return [];
+    }
   }
 
   /// [ADMIN] Upload a new portfolio item (Project)

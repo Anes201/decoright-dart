@@ -667,6 +667,18 @@ abstract class AppLocalizations {
   /// **'Select Space Type'**
   String get selectSpaceType;
 
+  /// No description provided for @spaceTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Space Types'**
+  String get spaceTypes;
+
+  /// No description provided for @noSpaceTypesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No space types found.'**
+  String get noSpaceTypesFound;
+
   /// No description provided for @locationAndDimensions.
   ///
   /// In en, this message translates to:
@@ -990,6 +1002,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login with OTP'**
   String get loginWithOtp;
+
+  /// No description provided for @aboutProject.
+  ///
+  /// In en, this message translates to:
+  /// **'About Project'**
+  String get aboutProject;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

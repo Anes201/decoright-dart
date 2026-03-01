@@ -115,6 +115,8 @@
   "spaceType": "Type d'Espace",
   "selectServiceType": "Sélectionner le Type de Service",
   "selectSpaceType": "Sélectionner le Type d'Espace",
+  "spaceTypes": "Types d'Espaces",
+  "noSpaceTypesFound": "Aucun type d'espace trouvé.",
   "locationAndDimensions": "Localisation & Dimensions",
   "location": "Localisation",
   "enterLocation": "Entrez la localisation du projet...",
@@ -173,5 +175,6 @@
   "loginWithOtp": "Se connecter par OTP",
   "login": "Connexion",
   "firstName": "Prénom",
-  "lastName": "Nom"
+  "lastName": "Nom",
+  "aboutProject": "À propos du projet"
 }

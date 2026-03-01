@@ -80,17 +80,14 @@ class NavigationController extends GetxController {
 
     final isGuest = authController.isGuest.value;
     if (isGuest) {
-      selectedIndex.value = 1; // Default to Gallery for guests
+      selectedIndex.value = 0; // Default to Home for guests
     }
 
     // Initialize screens list
+    final i18n = AppLocalizations.of(Get.context!)!;
     if (isGuest) {
-      final i18n = AppLocalizations.of(Get.context!)!;
       screens = [
-        GuestBarrier(
-          title: i18n.loginToViewHome,
-          message: i18n.loginToViewHomeSubtitle,
-        ),
+        const HomeScreen(), // Guest can now see Home
         const PortfolioScreen(),
         GuestBarrier(
           title: i18n.loginToOrder,
@@ -114,5 +111,6 @@ class NavigationController extends GetxController {
         SettingsScreen(),
       ];
     }
+
   }
 }

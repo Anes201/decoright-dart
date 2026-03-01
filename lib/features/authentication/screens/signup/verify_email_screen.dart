@@ -55,13 +55,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(CupertinoIcons.clear),
-          ),
-        ],
+        automaticallyImplyLeading: true,
       ),
       body: SingleChildScrollView(
         child: Padding(

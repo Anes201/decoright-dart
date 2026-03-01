@@ -7,6 +7,7 @@ import 'package:decoright/navigation_menu.dart'; // Import NavigationController
 import 'package:decoright/data/services/chat_service.dart';
 import 'package:decoright/data/services/request_service.dart';
 import 'package:decoright/features/chat/controllers/message_controller.dart';
+import 'package:decoright/features/authentication/controllers/auth_controller.dart';
 import 'package:decoright/features/personalization/controllers/profile_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +37,13 @@ class RequestController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final authController = Get.find<AuthController>();
     fetchTypes();
-    loadRequests();
+    
+    // Skip loading requests for guests as they don't have any and it prevents errors
+    if (!authController.isGuest.value) {
+      loadRequests();
+    }
   }
 
   Future<void> fetchTypes() async {
@@ -54,6 +60,9 @@ class RequestController extends GetxController {
 
   /// Load service requests (all for admin, own for customer)
   Future<void> loadRequests() async {
+    final authController = AuthController.instance;
+    if (authController.isGuest.value) return; // Skip for guests
+
     try {
       isLoading.value = true;
       

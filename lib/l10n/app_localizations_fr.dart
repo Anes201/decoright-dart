@@ -294,6 +294,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get selectSpaceType => 'Sélectionner le Type d\'Espace';
 
   @override
+  String get spaceTypes => 'Types d\'Espaces';
+
+  @override
+  String get noSpaceTypesFound => 'Aucun type d\'espace trouvé.';
+
+  @override
   String get locationAndDimensions => 'Localisation & Dimensions';
 
   @override
@@ -454,4 +460,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get loginWithOtp => 'Se connecter par OTP';
+
+  @override
+  String get aboutProject => 'À propos du projet';
 }
