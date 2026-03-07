@@ -106,16 +106,6 @@ class TLoginForm extends StatelessWidget {
                     child: Text(t.loginWithOtp),
                   ),
                 ),
-                const SizedBox(height: TSizes.spaceBtwItems),
-
-                /// create account
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () => Get.to(() => const SignUpScreen()),
-                    child: Text(t.signUp),
-                  ),
-                ),
               ],
             ),
           ],

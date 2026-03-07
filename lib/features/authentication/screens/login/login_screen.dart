@@ -1,4 +1,3 @@
-import 'package:decoright/common/styles/spacing_styles.dart';
 import 'package:decoright/features/authentication/screens/login/widgets/login_form.dart';
 import 'package:decoright/features/authentication/screens/login/widgets/login_header.dart';
 import 'package:decoright/utils/constants/sizes.dart';
@@ -12,6 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 
 import 'package:decoright/features/authentication/controllers/auth_controller.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -57,12 +57,18 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: TSizes.spaceBtwItems),
+              const SizedBox(height: TSizes.spaceBtwSections),
               SizedBox(
                 width: double.infinity,
-                child: TextButton(
-                  onPressed: () => Get.find<AuthController>().loginAsGuest(), 
-                  child: Text(t.continueAsGuest),
+                child: OutlinedButton.icon(
+                  onPressed: () => Get.find<AuthController>().loginAsGuest(),
+                  icon: const Icon(Iconsax.user),
+                  label: Text(t.continueAsGuest),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: const BorderSide(color: TColors.primary),
+                    foregroundColor: TColors.primary,
+                  ),
                 ),
               ),
             ],

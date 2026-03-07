@@ -13,6 +13,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../controllers/settings_controller.dart';
 import '../profile/profile_screen.dart';
+import 'package:decoright/features/authentication/controllers/auth_controller.dart';
+import 'package:decoright/common/widgets/guest/guest_barrier.dart';
 import 'language_selection_page.dart';
 import 'activity_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -50,13 +52,19 @@ class SettingsScreen extends StatelessWidget {
                   SettingsTile(
                     icon: Iconsax.user,
                     title: l10n.personalInformation,
-                    onTap: () => Get.to(() => ProfileScreen()),
+                    onTap: () {
+                      final authController = AuthController.instance;
+                      if (authController.isGuest.value) {
+                        Get.to(() => GuestBarrier(
+                          title: l10n.loginToOrder,
+                          message: l10n.loginToOrderSubtitle,
+                        ));
+                      } else {
+                        Get.to(() => ProfileScreen());
+                      }
+                    },
                   ),
-                  SettingsTile(
-                    icon: Iconsax.activity,
-                    title: l10n.activity,
-                    onTap: () => Get.to(() => const ActivityScreen()),
-                  ),
+                  
                   SettingsTile(
                     icon: Iconsax.support,
                     title: l10n.support,

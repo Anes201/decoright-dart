@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:decoright/l10n/app_localizations.dart';
 import 'package:decoright/utils/helpers/helper_functions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:decoright/utils/loaders/shimmer_loader.dart';
 
 class AllSpaceTypesScreen extends StatelessWidget {
   const AllSpaceTypesScreen({super.key});
@@ -65,6 +67,13 @@ class AllSpaceTypesScreen extends StatelessWidget {
                   space['display_name_en'] ??
                   space['name'];
               final description = space['description'] ?? '';
+              
+              final List images = space['space_type_images'] ?? [];
+              String? imageUrl;
+              if (images.isNotEmpty) {
+                images.sort((a, b) => (a['sort_order'] ?? 0).compareTo(b['sort_order'] ?? 0));
+                imageUrl = images.first['image_url'];
+              }
 
               return Container(
                 padding: const EdgeInsets.all(TSizes.md),
@@ -87,22 +96,20 @@ class AllSpaceTypesScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(TSizes.md),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? TColors.darkContainer
-                            : TColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(
-                          TSizes.cardRadiusMd,
+                    if (imageUrl != null && imageUrl.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
+                        child: CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const TShimmerEffect(width: 80, height: 80, radius: TSizes.cardRadiusMd),
+                          errorWidget: (context, url, error) => _buildIconPlaceholder(getIconForSpace(space['name'] ?? ''), isDark),
                         ),
-                      ),
-                      child: Icon(
-                        getIconForSpace(space['name'] ?? ''),
-                        color: TColors.primary,
-                        size: 32,
-                      ),
-                    ),
+                      )
+                    else
+                      _buildIconPlaceholder(getIconForSpace(space['name'] ?? ''), isDark),
                     const SizedBox(width: TSizes.spaceBtwItems),
                     Expanded(
                       child: Column(
@@ -135,6 +142,24 @@ class AllSpaceTypesScreen extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildIconPlaceholder(IconData iconData, bool isDark) {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: isDark ? TColors.darkContainer : TColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
+      ),
+      child: Center(
+        child: Icon(
+          iconData,
+          color: TColors.primary,
+          size: 32,
+        ),
+      ),
     );
   }
 }

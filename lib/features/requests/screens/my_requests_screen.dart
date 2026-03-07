@@ -10,6 +10,8 @@ import 'package:decoright/utils/helpers/helper_functions.dart';
 import 'package:decoright/utils/loaders/shimmer_loader.dart';
 import 'package:decoright/utils/constants/sizes.dart';
 import 'package:decoright/l10n/app_localizations.dart';
+import 'package:decoright/features/authentication/controllers/auth_controller.dart';
+import 'package:decoright/common/widgets/guest/guest_barrier.dart';
 
 class MyRequestsScreen extends StatelessWidget {
   const MyRequestsScreen({super.key});
@@ -76,7 +78,17 @@ class MyRequestsScreen extends StatelessWidget {
         );
       }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.to(() => const CreateRequestScreen()),
+        onPressed: () {
+          final authController = AuthController.instance;
+          if (authController.isGuest.value) {
+            Get.to(() => GuestBarrier(
+              title: i18n.loginToOrder,
+              message: i18n.loginToOrderSubtitle,
+            ));
+          } else {
+            Get.to(() => const CreateRequestScreen());
+          }
+        },
         backgroundColor: TColors.primary,
         child: const Icon(Iconsax.add, color: Colors.white),
       ),

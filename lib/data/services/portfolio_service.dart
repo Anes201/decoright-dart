@@ -16,11 +16,11 @@ class PortfolioService {
       var query = _client.from('projects').select('*, project_images(*)');
 
       // Visibility Rules:
-      // - GUEST: Can only see PUBLIC
-      // - AUTHENTICATED: Can see PUBLIC and CLIENTS
+      // - GUEST/ANON: Can only see PUBLIC
+      // - AUTHENTICATED: Can see PUBLIC and AUTHENTICATED_ONLY
       // - HIDDEN: No one sees these via this API
       if (isAuthenticated) {
-        query = query.or('visibility.eq.PUBLIC,visibility.eq.CLIENTS');
+        query = query.or('visibility.eq.PUBLIC,visibility.eq.AUTHENTICATED_ONLY');
       } else {
         query = query.eq('visibility', 'PUBLIC');
       }
@@ -63,7 +63,7 @@ class PortfolioService {
       var query = _client.from('gallery_items').select();
 
       if (isAuthenticated) {
-        query = query.or('visibility.eq.PUBLIC,visibility.eq.CLIENTS');
+        query = query.or('visibility.eq.PUBLIC,visibility.eq.AUTHENTICATED_ONLY');
       } else {
         query = query.eq('visibility', 'PUBLIC');
       }

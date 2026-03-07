@@ -4,6 +4,8 @@ import 'package:decoright/utils/constants/colors.dart';
 import 'package:decoright/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:decoright/common/widgets/guest/guest_barrier.dart';
+import 'package:decoright/features/authentication/controllers/auth_controller.dart' as decoright_auth;
 import 'package:iconsax/iconsax.dart';
 import 'package:decoright/l10n/app_localizations.dart';
 import 'package:decoright/utils/helpers/helper_functions.dart';
@@ -58,7 +60,17 @@ class AllServiceTypesScreen extends StatelessWidget {
               final imageUrl = service['image_url'];
 
               return GestureDetector(
-                onTap: () => Get.to(() => const CreateRequestScreen()),
+                onTap: () {
+                  final authController = Get.find<decoright_auth.AuthController>();
+                  if (authController.isGuest.value) {
+                    Get.to(() => GuestBarrier(
+                      title: i18n.loginToOrder,
+                      message: i18n.loginToOrderSubtitle,
+                    ));
+                  } else {
+                    Get.to(() => const CreateRequestScreen());
+                  }
+                },
                 child: Container(
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(

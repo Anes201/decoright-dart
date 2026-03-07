@@ -20,7 +20,8 @@ class GuestBarrier extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // Allow the user to cancel and go back
+        automaticallyImplyLeading: true,
       ),
       body: Center(
         child: Padding(
@@ -46,8 +47,8 @@ class GuestBarrier extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.find<AuthController>().signOut(); // Clear guest state
-                    Get.offAll(() => const LoginScreen());
+                    // Navigate to Login without destroying the stack so the user can easily go back
+                    Get.to(() => const LoginScreen());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColors.primary,
